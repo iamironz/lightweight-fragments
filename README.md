@@ -53,7 +53,7 @@ Using:
         }
 
         super.onBackPressed();
-        manager.destroyStack(); //do not use stack destroying into onDestroy invocation for two way orientation it destroy all stack!!!
+        manager.destroyStack(); //do not use into onDestroy invocation for two-way orientation!!!
     }
     
 **Activity lifecycle handling:**
