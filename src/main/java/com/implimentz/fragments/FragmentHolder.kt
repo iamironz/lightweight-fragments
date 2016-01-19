@@ -16,9 +16,8 @@ import java.util.concurrent.ConcurrentHashMap
  */
 public object FragmentHolder {
 
-    private var registered = false
-
-    private val stack = ConcurrentHashMap<Int, ArrayList<FragmentData<Any, AppCompatActivity>>>()
+    private var registered: Boolean = false
+    private val stack: ConcurrentHashMap<Int, ArrayList<FragmentData<Any, AppCompatActivity>>> = ConcurrentHashMap()
 
     fun init(context: Context) {
         if (registered) {
@@ -40,8 +39,8 @@ public object FragmentHolder {
     }
 
     private fun notifyConfigurationChanged(newConfig: Configuration) {
-        stack.values.forEach { it ->
-            it.forEach { it ->
+        stack.values.forEach {
+            it.forEach {
                 val fragment = it.fragment
                 fragment.setConfigurationChanged()
                 if (fragment.isRunned && fragment.isShowing) {
@@ -53,8 +52,8 @@ public object FragmentHolder {
     }
 
     private fun notifyLowMemory() {
-        stack.values.forEach { it ->
-            it.forEach { it ->
+        stack.values.forEach {
+            it.forEach {
                 if (it.fragment.isRunned && it.fragment.isShowing) {
                     it.fragment.onLowMemory()
                 }
