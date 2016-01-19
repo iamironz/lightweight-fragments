@@ -37,7 +37,7 @@ public final class FragmentManager {
     public FragmentManager(final AppCompatActivity activity, final int containerId) {
         this.activity = activity;
         this.containerId = containerId;
-        FragmentHolder.register(containerId);
+        FragmentHolder.INSTANCE.register(containerId);
         container = (ViewGroup) activity.findViewById(containerId);
         this.annotationManager = new AnnotationManager();
     }
@@ -53,11 +53,11 @@ public final class FragmentManager {
 
         toolbar = null;
         listener = null;
-        FragmentHolder.unregister(containerId);
+        FragmentHolder.INSTANCE.unregister(containerId);
     }
 
     public final void onPause() {
-        final List<FragmentData> stack = getStack();
+        final List<FragmentData<Object, AppCompatActivity>> stack = getStack();
 
         if (stack.isEmpty()) {
             return;
@@ -74,7 +74,7 @@ public final class FragmentManager {
     }
 
     public final void onResume() {
-        final List<FragmentData> stack = getStack();
+        final List<FragmentData<Object, AppCompatActivity>> stack = getStack();
 
         if (stack.isEmpty()) {
             return;
@@ -86,8 +86,8 @@ public final class FragmentManager {
         open(fragment);
     }
 
-    public final List<FragmentData> getStack() {
-        return FragmentHolder.getStackById(containerId);
+    public final List<FragmentData<Object, AppCompatActivity>> getStack() {
+        return FragmentHolder.INSTANCE.getStackById(containerId);
     }
 
     public final void openFragment(final String name, final Fragment fragment) {
@@ -117,7 +117,7 @@ public final class FragmentManager {
     }
 
     private void openFragment0(final String name, final Fragment fragment) {
-        final List<FragmentData> stack = getStack();
+        final List<FragmentData<Object, AppCompatActivity>> stack = getStack();
 
         if (!stack.isEmpty()) {
             final FragmentData data = stack.get(stack.size() - 1);
@@ -143,7 +143,7 @@ public final class FragmentManager {
     }
 
     private boolean popFragment0(final String name) {
-        final List<FragmentData> stack = getStack();
+        final List<FragmentData<Object, AppCompatActivity>> stack = getStack();
 
         if (stack.isEmpty()) {
             return false;
@@ -162,7 +162,7 @@ public final class FragmentManager {
     }
 
     private void closeFragmentRange(final int start) {
-        final List<FragmentData> stack = getStack();
+        final List<FragmentData<Object, AppCompatActivity>> stack = getStack();
 
         final List<FragmentData> forDeleting = new ArrayList<>();
 
@@ -176,7 +176,7 @@ public final class FragmentManager {
     }
 
     public final void closeLastFragment() {
-        final List<FragmentData> stack = getStack();
+        final List<FragmentData<Object, AppCompatActivity>> stack = getStack();
 
         if (stack.isEmpty() || stack.size() < 2) {
             return;
@@ -191,7 +191,7 @@ public final class FragmentManager {
     }
 
     public final boolean hasNotEndedActions() {
-        final List<FragmentData> stack = getStack();
+        final List<FragmentData<Object, AppCompatActivity>> stack = getStack();
 
         if (stack.isEmpty()) {
             return false;
@@ -203,7 +203,7 @@ public final class FragmentManager {
     }
 
     public final void onActionEndRequired() {
-        final List<FragmentData> stack = getStack();
+        final List<FragmentData<Object, AppCompatActivity>> stack = getStack();
 
         if (stack.isEmpty()) {
             return;
@@ -229,7 +229,7 @@ public final class FragmentManager {
     }
 
     private void closeFragment0(final String name) {
-        final List<FragmentData> stack = getStack();
+        final List<FragmentData<Object, AppCompatActivity>> stack = getStack();
 
         if (stack.isEmpty()) {
             return;
@@ -247,7 +247,7 @@ public final class FragmentManager {
 
     private void tryRestoreLast() {
 
-        final List<FragmentData> stack = getStack();
+        final List<FragmentData<Object, AppCompatActivity>> stack = getStack();
 
         if (stack.isEmpty()) {
             return;
@@ -296,7 +296,7 @@ public final class FragmentManager {
     }
 
     public final boolean isActionModeEnabled() {
-        final List<FragmentData> stack = getStack();
+        final List<FragmentData<Object, AppCompatActivity>> stack = getStack();
 
         if (stack.isEmpty()) {
             return false;
@@ -309,7 +309,7 @@ public final class FragmentManager {
     }
 
     public final void disableActionMode() {
-        final List<FragmentData> stack = getStack();
+        final List<FragmentData<Object, AppCompatActivity>> stack = getStack();
 
         if (stack.isEmpty()) {
             return;
