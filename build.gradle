@@ -43,5 +43,8 @@ dependencies {
 }
 
 task jar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
+    from "$buildDir/intermediates/classes/release/"
+    exclude '**/BuildConfig.class'
+    exclude '**/R.class'
+    exclude '**/R$*.class'
 }

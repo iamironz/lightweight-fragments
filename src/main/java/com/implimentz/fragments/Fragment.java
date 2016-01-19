@@ -219,14 +219,14 @@ public class Fragment<D, A extends AppCompatActivity> {
     }
 
     public final void setTitle(final String title) {
-        if (isShowing) {
+        if (isShowing && !isFinished) {
             toolbar.setTitle(title);
         }
         this.title = title;
     }
 
     public final void setSubTitle(final String subTitle) {
-        if (isShowing) {
+        if (isShowing && !isFinished) {
             toolbar.setSubtitle(subTitle);
         }
         this.subTitle = subTitle;

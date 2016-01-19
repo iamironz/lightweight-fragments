@@ -47,7 +47,7 @@ public final class FragmentHolder {
             for (final FragmentData data : list) {
                 final Fragment fragment = data.getFragment();
                 fragment.setConfigurationChanged();
-                if (fragment.isShowing()) {
+                if (!fragment.isFinished() && fragment.isShowing()) {
                     fragment.onPause();
                     fragment.onConfigurationChanged(newConfig);
                 }
@@ -59,7 +59,7 @@ public final class FragmentHolder {
         for (final Map.Entry<Integer, ArrayList<FragmentData>> entry : stack.entrySet()) {
             for (final FragmentData data : entry.getValue()) {
                 final Fragment fragment = data.getFragment();
-                if (fragment.isShowing()) {
+                if (!fragment.isFinished() && fragment.isShowing()) {
                     fragment.onLowMemory();
                 }
             }
