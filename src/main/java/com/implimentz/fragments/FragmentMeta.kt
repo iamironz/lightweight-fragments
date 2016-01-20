@@ -13,7 +13,7 @@ import kotlin.annotation.AnnotationTarget.FILE
  * twitter: iamironz
  */
 @Target(CLASS, FILE)
-@kotlin.annotation.Retention(RUNTIME)
+@Retention(RUNTIME)
 annotation
 /**
  * Annotation for annotating fragment class and getting from it fragment meta information

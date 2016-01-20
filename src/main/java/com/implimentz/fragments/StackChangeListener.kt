@@ -9,5 +9,5 @@ import android.support.v7.app.AppCompatActivity
  * Email: implimentz@gmail.com
  */
 interface StackChangeListener {
-    fun onStackChanged(fragment: Fragment<Any, AppCompatActivity>, meta: FragmentMeta)
+    fun onStackChanged(fragment: Fragment<out Any, out AppCompatActivity>, meta: FragmentMeta)
 }

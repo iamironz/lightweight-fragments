@@ -15,10 +15,11 @@ import android.widget.ImageView
 /**
  * Created by Alexander Efremenkov.
  * Date: 19.01.16, 17:59
- * In Intellij IDEA 15.0.1 Ultimate
+ * In Intellij IDEA 15.0.3 Ultimate
  * email: implimentz@gmail.com
  * twitter: iamironz
  */
+@SuppressWarnings("unchecked")
 open class Fragment<D, A : AppCompatActivity> {
 
     var isFinished = false
@@ -47,6 +48,10 @@ open class Fragment<D, A : AppCompatActivity> {
         if (view != null) {
             clearViews(view)
         }
+    }
+
+    fun setOwner(a: AppCompatActivity) {
+        this.activity = a as A
     }
 
     private fun clearViews(v: View?) {
@@ -85,7 +90,7 @@ open class Fragment<D, A : AppCompatActivity> {
 
     }
 
-    protected fun constructView(container: ViewGroup): View {
+    fun constructView(container: ViewGroup): View {
         if (view == null || configurationChanged) {
             view = onCreateView(activity?.layoutInflater as LayoutInflater, container, args as D)
         }
@@ -154,8 +159,6 @@ open class Fragment<D, A : AppCompatActivity> {
     open fun onOptionsItemSelected(item: MenuItem): Boolean {
         return false
     }
-
-    val isRunned: Boolean get() = !isFinished
 
     val isHidden: Boolean get() = !isShowing
 
