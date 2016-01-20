@@ -14,7 +14,9 @@ import java.util.*
  * twitter: iamironz
  */
 @SuppressWarnings("unchecked")
-public class FragmentManager(val activity: AppCompatActivity, val containerId: Int, val toolbar: Toolbar) {
+public class FragmentManager(private val activity: AppCompatActivity,
+                             private val containerId: Int,
+                             private val toolbar: Toolbar) {
 
     lateinit private var container: ViewGroup
     private val annotationManager = AnnotationManager()
@@ -110,7 +112,7 @@ public class FragmentManager(val activity: AppCompatActivity, val containerId: I
         return popFragment0(fragment.javaClass.name)
     }
 
-    fun popFragment(fragment: Class<Fragment<out Any, out AppCompatActivity>>): Boolean {
+    fun popFragment(fragment: Class<out Fragment<out Any, out AppCompatActivity>>): Boolean {
         return popFragment0(fragment.name)
     }
 
@@ -211,7 +213,8 @@ public class FragmentManager(val activity: AppCompatActivity, val containerId: I
             return
         }
 
-        for (data in stack) {
+        for(i in stack.lastIndex downTo 0) {
+            val data = stack[i]
             if (data.name == name) {
                 close(data.fragment)
                 getStack().remove(data)
@@ -229,7 +232,7 @@ public class FragmentManager(val activity: AppCompatActivity, val containerId: I
             return
         }
 
-        val data = stack[stack.size - 1]
+        val data = stack.last()
         open(data.fragment)
     }
 
@@ -299,10 +302,6 @@ public class FragmentManager(val activity: AppCompatActivity, val containerId: I
     }
 
     private fun close(fragment: Fragment<out Any, out AppCompatActivity>) {
-        if (fragment.isShowing.not()) {
-            return
-        }
-
         container.removeAllViews()
 
         clearMenu()

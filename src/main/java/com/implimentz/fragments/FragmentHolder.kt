@@ -32,7 +32,6 @@ public object FragmentHolder {
         override fun onConfigurationChanged(newConfig: Configuration) {
             notifyConfigurationChanged(newConfig)
         }
-
         override fun onLowMemory() {
             notifyLowMemory()
         }
@@ -44,8 +43,8 @@ public object FragmentHolder {
                 val fragment = it.fragment
                 fragment.setConfigurationChanged()
                 if (fragment.isFinished.not() && fragment.isShowing) {
-                    fragment.onPause()
                     fragment.onConfigurationChanged(newConfig)
+                    fragment.onPause()
                 }
             }
         }
