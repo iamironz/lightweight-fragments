@@ -19,7 +19,6 @@ import android.widget.ImageView
  * email: implimentz@gmail.com
  * twitter: iamironz
  */
-@SuppressWarnings("unchecked")
 open class Fragment<D, A : AppCompatActivity> {
 
     var isFinished = false

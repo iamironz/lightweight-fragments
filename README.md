@@ -17,14 +17,15 @@ Using:
         
 **To opening fragment by instance:**
 
-    manager.openFragment(new MainFragment(1, false, R.color.colorPrimary));
+    manager.openFragment(new MainFragment());
 
     
 **To close fragment:**
 
-    manager.closeFragment(MainFragment.class);
+    final Fragment fragment = new MainFragment();
+    manager.closeFragment(fragment);
 
-    
+
 **To pop fragment:**
 
     manager.popFragment(MainFragment.class);
