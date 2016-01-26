@@ -10,7 +10,7 @@ Using:
     manager.setStackChangeListener(new StackChangeListener() {
         @Override
         public void onStackChanged(Fragment fragment, FragmentMeta meta) {
-            Log.d("MainActivity", "onStackChanged: " + meta.toString());
+            //do something with stack changes
         }
     });
     
