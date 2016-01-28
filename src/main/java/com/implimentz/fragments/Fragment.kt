@@ -21,9 +21,9 @@ import android.widget.ImageView
  */
 open class Fragment<D, A : AppCompatActivity> {
 
-    var isFinished = false
-    var isShowing = false
-    private var configurationChanged = false
+    var isFinished: Boolean = false
+    var isShowing: Boolean = false
+    private var configurationChanged: Boolean = false
 
     var view: View? = null
     var args: D? = null
@@ -136,9 +136,9 @@ open class Fragment<D, A : AppCompatActivity> {
 
     }
 
-    fun startActionMode(callback: ActionMode.Callback): ActionMode {
+    fun startActionMode(callback: ActionMode.Callback): ActionMode? {
         actionMode = activity?.startSupportActionMode(callback)
-        return actionMode as ActionMode
+        return actionMode
     }
 
     fun finishActionMode() {
@@ -161,8 +161,8 @@ open class Fragment<D, A : AppCompatActivity> {
 
     val isHidden: Boolean get() = !isShowing
 
-    fun getString(@StringRes stringId: Int): String {
-        return activity?.getString(stringId) as String
+    fun getString(@StringRes stringId: Int): String? {
+        return activity?.getString(stringId)
     }
 
     fun getColor(colorId: Int): Int {

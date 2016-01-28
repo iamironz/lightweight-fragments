@@ -18,8 +18,8 @@ public class FragmentManager(private val activity: AppCompatActivity,
                              private val containerId: Int,
                              private val toolbar: Toolbar) {
 
-    private val annotationManager = AnnotationManager()
-    private val handler = Handler()
+    private val annotationManager: AnnotationManager = AnnotationManager()
+    private val handler: Handler = Handler()
 
     lateinit private var container: ViewGroup
 

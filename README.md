@@ -74,7 +74,7 @@ Using:
 **Menu creating and menu item click handle:**
 
     @Override
-    public int onCreateOptionMenu(@NonNull Menu menu) {
+    public Integer onCreateOptionMenu(@NonNull Menu menu) {
         return R.menu.main;
     }
 
