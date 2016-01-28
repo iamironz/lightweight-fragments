@@ -70,3 +70,31 @@ Using:
         manager.onPause();
         super.onPause();
     }
+    
+**Menu creating and menu item click handle:**
+
+    @Override
+    public int onCreateOptionMenu(@NonNull Menu menu) {
+        return R.menu.main;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        //handle with some actions
+        return super.onOptionsItemSelected(item);
+    }
+    
+**Handle not end fragment actions:**
+
+    b = true;
+
+    @Override
+    public boolean hasNotEndedAction() {
+        return b;
+    }
+
+    @Override
+    public void onActionEndRequired() {
+        //show exit confirmation dialog (for example)
+        b = false;
+    }

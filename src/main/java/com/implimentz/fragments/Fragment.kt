@@ -150,8 +150,8 @@ open class Fragment<D, A : AppCompatActivity> {
     }
 
     @MenuRes
-    open fun onCreateOptionMenu(menu: Menu): Int {
-        return 0
+    open fun onCreateOptionMenu(menu: Menu): Int? {
+        return null
     }
 
     @CallSuper

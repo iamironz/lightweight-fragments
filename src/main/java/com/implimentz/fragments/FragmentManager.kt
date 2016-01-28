@@ -18,16 +18,12 @@ public class FragmentManager(private val activity: AppCompatActivity,
                              private val containerId: Int,
                              private val toolbar: Toolbar) {
 
-    lateinit private var container: ViewGroup
     private val annotationManager = AnnotationManager()
-
-    private var listener: StackChangeListener = object : StackChangeListener {
-        override fun onStackChanged(fragment: Fragment<out Any, out AppCompatActivity>, meta: FragmentMeta) {
-            //ignored because stub
-        }
-    }
-
     private val handler = Handler()
+
+    lateinit private var container: ViewGroup
+
+    private var listener: StackChangeListener? = null
 
     init {
         FragmentHolder.register(containerId)
@@ -39,7 +35,9 @@ public class FragmentManager(private val activity: AppCompatActivity,
     }
 
     fun destroyStack() {
-        getStack().forEach { it.fragment.onDestroy() }
+        getStack().forEach {
+            it.fragment.onDestroy()
+        }
         FragmentHolder.unregister(containerId)
     }
 
@@ -73,7 +71,7 @@ public class FragmentManager(private val activity: AppCompatActivity,
         open(fragment)
     }
 
-    internal fun getStack(): ArrayList<FragmentData<out Any, out AppCompatActivity>> {
+    internal fun getStack(): MutableList<FragmentData<out Any, out AppCompatActivity>> {
         return FragmentHolder.getStackById(containerId)
     }
 
@@ -90,7 +88,9 @@ public class FragmentManager(private val activity: AppCompatActivity,
     }
 
     fun openFragment(fragment: Fragment<out Any, out AppCompatActivity>, delay: Long) {
-        handler.postDelayed({ openFragment0(fragment.javaClass.name, fragment) }, delay)
+        handler.postDelayed(post@ {
+            openFragment0(fragment.javaClass.name, fragment)
+        }, delay)
     }
 
     private fun openFragment0(name: String, fragment: Fragment<out Any, out AppCompatActivity>) {
@@ -213,7 +213,7 @@ public class FragmentManager(private val activity: AppCompatActivity,
             return
         }
 
-        for(i in stack.lastIndex downTo 0) {
+        for (i in stack.lastIndex downTo 0) {
             val data = stack[i]
             if (data.name == name) {
                 close(data.fragment)
@@ -269,7 +269,9 @@ public class FragmentManager(private val activity: AppCompatActivity,
     }
 
     private fun sendFragmentOpened(fragment: Fragment<out Any, out AppCompatActivity>, meta: FragmentMeta) {
-        listener.onStackChanged(fragment, meta)
+        listener?.let stack@ {
+            it.onStackChanged(fragment, meta)
+        }
     }
 
     fun isActionModeEnabled(): Boolean {
@@ -312,9 +314,11 @@ public class FragmentManager(private val activity: AppCompatActivity,
     private fun setMenu(fragment: Fragment<out Any, out AppCompatActivity>) {
         toolbar.menu.clear()
         val resId = fragment.onCreateOptionMenu(toolbar.menu)
-        if (resId != 0) {
-            toolbar.inflateMenu(resId)
-            toolbar.setOnMenuItemClickListener { item -> fragment.onOptionsItemSelected(item) }
+        resId?.let menu@ {
+            toolbar.inflateMenu(it)
+            toolbar.setOnMenuItemClickListener item@ {
+                fragment.onOptionsItemSelected(it)
+            }
         }
     }
 

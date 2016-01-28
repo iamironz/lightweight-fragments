@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap
 public object FragmentHolder {
 
     private var registered: Boolean = false
-    private val stack: MutableMap<Int, ArrayList<FragmentData<out Any, out AppCompatActivity>>> = ConcurrentHashMap()
+    private val stack: MutableMap<Int, MutableList<FragmentData<out Any, out AppCompatActivity>>> = ConcurrentHashMap()
 
     fun init(context: Context) {
         if (registered) {
@@ -32,6 +32,7 @@ public object FragmentHolder {
         override fun onConfigurationChanged(newConfig: Configuration) {
             notifyConfigurationChanged(newConfig)
         }
+
         override fun onLowMemory() {
             notifyLowMemory()
         }
@@ -52,10 +53,12 @@ public object FragmentHolder {
 
     private fun notifyLowMemory() {
         stack.values.forEach {
-            it.forEach {
-                if (it.fragment.isFinished.not() && it.fragment.isShowing) {
-                    it.fragment.onLowMemory()
-                }
+            it.filter {
+                it.fragment.isFinished.not()
+            }.filter {
+                it.fragment.isShowing
+            }.forEach {
+                it.fragment.onLowMemory()
             }
         }
     }
@@ -77,7 +80,7 @@ public object FragmentHolder {
         stack.remove(id)
     }
 
-    fun getStackById(id: Int): ArrayList<FragmentData<out Any, out AppCompatActivity>> {
+    fun getStackById(id: Int): MutableList<FragmentData<out Any, out AppCompatActivity>> {
         if (!stack.containsKey(id)) {
             return ArrayList()
         }
