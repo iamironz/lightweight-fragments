@@ -90,7 +90,7 @@ open class Fragment<D, A : AppCompatActivity> {
     }
 
     fun constructView(container: ViewGroup): View {
-        if (view == null || configurationChanged) {
+        if ((view == null) or configurationChanged) {
             view = onCreateView(activity?.layoutInflater as LayoutInflater, container, args as D)
         }
 

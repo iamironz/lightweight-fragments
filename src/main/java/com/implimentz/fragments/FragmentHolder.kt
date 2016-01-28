@@ -41,12 +41,15 @@ public object FragmentHolder {
     private fun notifyConfigurationChanged(newConfig: Configuration) {
         stack.values.forEach {
             it.forEach {
-                val fragment = it.fragment
-                fragment.setConfigurationChanged()
-                if (fragment.isFinished.not() && fragment.isShowing) {
-                    fragment.onConfigurationChanged(newConfig)
-                    fragment.onPause()
-                }
+                it.fragment.setConfigurationChanged()
+            }
+            it.filter {
+                it.fragment.isFinished.not()
+            }.filter {
+                it.fragment.isShowing
+            }.forEach {
+                it.fragment.onConfigurationChanged(newConfig)
+                it.fragment.onPause()
             }
         }
     }
