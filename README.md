@@ -84,7 +84,7 @@ Using:
         return super.onOptionsItemSelected(item);
     }
     
-**Handle not end fragment actions:**
+**Handle interrupted fragment actions:**
 
     b = true;
 
