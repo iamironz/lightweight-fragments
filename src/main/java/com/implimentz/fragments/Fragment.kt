@@ -1,9 +1,7 @@
 package com.implimentz.fragments
 
 import android.content.res.Configuration
-import android.support.annotation.CallSuper
-import android.support.annotation.MenuRes
-import android.support.annotation.StringRes
+import android.support.annotation.*
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.view.ActionMode
@@ -13,7 +11,7 @@ import android.widget.AdapterView
 import android.widget.ImageView
 
 /**
- * Created by Alexander Efremenkov.
+ * Created by ironz.
  * Date: 19.01.16, 17:59
  * In Intellij IDEA 15.0.3 Ultimate
  * email: implimentz@gmail.com
@@ -21,34 +19,50 @@ import android.widget.ImageView
  */
 open class Fragment<D, A : AppCompatActivity> {
 
-    var isFinished: Boolean = false
-    var isShowing: Boolean = false
+    private var finished: Boolean = false
+    val isFinished: Boolean
+        get() = finished
+
+    private var showing: Boolean = false
+    val isShowing: Boolean
+        get() = showing
+
     private var configurationChanged: Boolean = false
 
-    var view: View? = null
-    var args: D? = null
-    var activity: A? = null
+    private var v: View? = null
+    val view: View?
+        get() = v
+
+    private var args: D? = null
+    val arguments: D?
+        get() = args
+
+    private var activity: A? = null
+    val owner: A?
+        get() = activity
 
     var title: String? = null
+
     var subTitle: String? = null
 
     var toolbar: Toolbar? = null
     private var actionMode: ActionMode? = null
 
     constructor() {
-
+        this.args = null
     }
 
-    constructor(args: D) {
+    constructor(args: D?) {
         this.args = args
     }
 
     protected fun clearViews() {
-        if (view != null) {
-            clearViews(view)
+        if (v != null) {
+            clearViews(v)
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun setOwner(a: AppCompatActivity) {
         this.activity = a as A
     }
@@ -77,7 +91,7 @@ open class Fragment<D, A : AppCompatActivity> {
 
     }
 
-    fun setConfigurationChanged() {
+    internal fun setConfigurationChanged() {
         configurationChanged = true
     }
 
@@ -85,41 +99,46 @@ open class Fragment<D, A : AppCompatActivity> {
 
     }
 
-    open fun onLowMemory() {
-
+    fun getConstructView(): View? {
+        return v
     }
 
     fun constructView(container: ViewGroup): View {
-        if ((view == null) or configurationChanged) {
-            view = onCreateView(activity?.layoutInflater as LayoutInflater, container, args as D)
+        if ((v == null) or configurationChanged) {
+            v = onCreateView(activity?.layoutInflater as LayoutInflater, container)
+            onViewCreated(v as View)
         }
 
         configurationChanged = false
-        isShowing = true
-        return view as View
+        showing = true
+        return v as View
     }
 
-    open fun onCreateView(inflater: LayoutInflater, container: ViewGroup, args: D): View {
+    open fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         return View(activity)
+    }
+
+    open fun onViewCreated(view: View) {
+
     }
 
     @CallSuper
     open fun onResume() {
-        isShowing = true
+        showing = true
     }
 
     @CallSuper
     open fun onPause() {
-        isShowing = false
+        showing = false
     }
 
     @CallSuper
     open fun onDestroy() {
-        isFinished = true
-        isShowing = false
+        finished = true
+        showing = false
         configurationChanged = false
         clearViews()
-        view = null
+        v = null
         args = null
         activity = null
         title = null
@@ -159,17 +178,25 @@ open class Fragment<D, A : AppCompatActivity> {
         return false
     }
 
-    val isHidden: Boolean get() = !isShowing
+    open fun onBackPressed() {
+
+    }
+
+    fun closeSelf() {
+        activity?.onBackPressed()
+    }
+
+    val isHidden: Boolean get() = !showing
 
     fun getString(@StringRes stringId: Int): String? {
         return activity?.getString(stringId)
     }
 
-    fun getColor(colorId: Int): Int {
-        return ContextCompat.getColor(activity, colorId)
+    fun getInt(@IntegerRes intId: Int): Int? {
+        return activity?.resources?.getInteger(intId)
     }
 
-    fun onBackPressed() {
-        activity?.onBackPressed()
+    fun getColor(@ColorRes colorId: Int): Int {
+        return ContextCompat.getColor(activity, colorId)
     }
 }

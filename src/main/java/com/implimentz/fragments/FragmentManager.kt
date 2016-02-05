@@ -7,16 +7,16 @@ import android.view.ViewGroup
 import java.util.*
 
 /**
- * Created by Alexander Efremenkov.
+ * Created by ironz.
  * Date: 20.01.16, 9:32
  * In Intellij IDEA 15.0.3 Ultimate
  * email: implimentz@gmail.com
  * twitter: iamironz
  */
 @SuppressWarnings("unchecked")
-public class FragmentManager(private val activity: AppCompatActivity,
-                             private val containerId: Int,
-                             private val toolbar: Toolbar) {
+class FragmentManager(private val activity: AppCompatActivity,
+                      private val containerId: Int,
+                      private val toolbar: Toolbar) {
 
     private val annotationManager: AnnotationManager = AnnotationManager()
     private val handler: Handler = Handler()
@@ -71,7 +71,7 @@ public class FragmentManager(private val activity: AppCompatActivity,
         open(fragment)
     }
 
-    internal fun getStack(): MutableList<FragmentData<out Any, out AppCompatActivity>> {
+    private fun getStack(): MutableList<FragmentData<out Any, out AppCompatActivity>> {
         return FragmentHolder.getStackById(containerId)
     }
 
@@ -88,7 +88,7 @@ public class FragmentManager(private val activity: AppCompatActivity,
     }
 
     fun openFragment(fragment: Fragment<out Any, out AppCompatActivity>, delay: Long) {
-        handler.postDelayed(post@ {
+        handler.postDelayed({
             openFragment0(fragment.javaClass.name, fragment)
         }, delay)
     }
@@ -166,6 +166,17 @@ public class FragmentManager(private val activity: AppCompatActivity,
 
         val actual = stack.last()
         open(actual.fragment)
+    }
+
+    fun onBackPressed() {
+        val stack = getStack()
+
+        if (stack.isEmpty() || stack.size < 2) {
+            return
+        }
+
+        val item = stack[stack.lastIndex]
+        item.fragment.onBackPressed()
     }
 
     fun hasNotEndedActions(): Boolean {
@@ -253,7 +264,7 @@ public class FragmentManager(private val activity: AppCompatActivity,
 
         val meta = annotationManager.getFragmentMeta(fragment)
         updateToolbar(fragment, meta)
-        sendFragmentOpened(fragment, meta)
+        sendFragmentOpened(meta)
     }
 
     private fun updateToolbar(fragment: Fragment<out Any, out AppCompatActivity>, meta: FragmentMeta) {
@@ -268,9 +279,9 @@ public class FragmentManager(private val activity: AppCompatActivity,
         }
     }
 
-    private fun sendFragmentOpened(fragment: Fragment<out Any, out AppCompatActivity>, meta: FragmentMeta) {
-        listener?.let stack@ {
-            it.onStackChanged(fragment, meta)
+    private fun sendFragmentOpened(meta: FragmentMeta) {
+        listener?.let {
+            it.onStackChanged(meta)
         }
     }
 
@@ -314,9 +325,9 @@ public class FragmentManager(private val activity: AppCompatActivity,
     private fun setMenu(fragment: Fragment<out Any, out AppCompatActivity>) {
         toolbar.menu.clear()
         val resId = fragment.onCreateOptionMenu(toolbar.menu)
-        resId?.let menu@ {
+        resId?.let {
             toolbar.inflateMenu(it)
-            toolbar.setOnMenuItemClickListener item@ {
+            toolbar.setOnMenuItemClickListener {
                 fragment.onOptionsItemSelected(it)
             }
         }
