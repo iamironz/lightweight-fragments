@@ -9,4 +9,5 @@ import android.support.v7.app.AppCompatActivity
  * email: implimentz@gmail.com
  * twitter: iamironz
  */
-internal data class FragmentData<T, D: AppCompatActivity>(val name: String, val fragment: Fragment<out T, out D>)
+internal data class FragmentData<T, D : AppCompatActivity>(val name: String,
+                                                           val fragment: Fragment<out T, out D>)

@@ -98,6 +98,7 @@ class FragmentManager(private val activity: AppCompatActivity,
 
         if (stack.isEmpty().not()) {
             val data = stack.last()
+            disableActionMode()
             data.fragment.onPause()
         }
 
@@ -130,7 +131,7 @@ class FragmentManager(private val activity: AppCompatActivity,
         for (i in stack.indices) {
             val data = stack[i]
             if (data.name == name) {
-                closeFragmentRange(i + 1)
+                closeFragmentRange(i.inc())
                 open(data.fragment)
                 return true
             }
@@ -253,12 +254,15 @@ class FragmentManager(private val activity: AppCompatActivity,
             return
         }
 
-        val view = fragment.constructView(container)
+        fragment.setContainer(container)
+
+        val view = fragment.constructView()
 
         setMenu(fragment)
 
-        container.removeAllViews()
-        container.addView(view)
+        if(container.contains(view).not()) {
+            container.addView(view)
+        }
 
         fragment.onResume()
 
@@ -315,7 +319,10 @@ class FragmentManager(private val activity: AppCompatActivity,
     }
 
     private fun close(fragment: Fragment<out Any, out AppCompatActivity>) {
-        container.removeAllViews()
+
+        if(container.contains(fragment.view)) {
+            container.removeView(fragment.view)
+        }
 
         clearMenu()
 

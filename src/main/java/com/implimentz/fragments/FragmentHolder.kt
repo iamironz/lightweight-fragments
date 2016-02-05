@@ -45,8 +45,6 @@ object FragmentHolder {
             }
             it.filter {
                 it.fragment.isFinished.not()
-            }.filter {
-                it.fragment.isShowing
             }.forEach {
                 it.fragment.onConfigurationChanged(newConfig)
                 it.fragment.onPause()

@@ -29,6 +29,8 @@ open class Fragment<D, A : AppCompatActivity> {
 
     private var configurationChanged: Boolean = false
 
+    private lateinit var container: ViewGroup
+
     private var v: View? = null
     val view: View?
         get() = v
@@ -87,8 +89,8 @@ open class Fragment<D, A : AppCompatActivity> {
                 v.removeAllViews()
             }
         } catch (ignored: Exception) {
-        }
 
+        }
     }
 
     internal fun setConfigurationChanged() {
@@ -99,14 +101,15 @@ open class Fragment<D, A : AppCompatActivity> {
 
     }
 
-    fun getConstructView(): View? {
-        return v
+    fun getConstructView(): View {
+        return constructView()
     }
 
-    fun constructView(container: ViewGroup): View {
+    fun constructView(): View {
+        this.container = container
         if ((v == null) or configurationChanged) {
             v = onCreateView(activity?.layoutInflater as LayoutInflater, container)
-            onViewCreated(v as View)
+            onViewCreated(v as View, arguments)
         }
 
         configurationChanged = false
@@ -118,7 +121,7 @@ open class Fragment<D, A : AppCompatActivity> {
         return View(activity)
     }
 
-    open fun onViewCreated(view: View) {
+    open fun onViewCreated(view: View, arguments: D?) {
 
     }
 
@@ -198,5 +201,9 @@ open class Fragment<D, A : AppCompatActivity> {
 
     fun getColor(@ColorRes colorId: Int): Int {
         return ContextCompat.getColor(activity, colorId)
+    }
+
+    fun setContainer(container: ViewGroup) {
+        this.container = container
     }
 }
