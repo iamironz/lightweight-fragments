@@ -11,5 +11,10 @@ import android.view.ViewGroup
  */
 
 fun ViewGroup.contains(view: View?): Boolean {
-    return this.indexOfChild(view) != -1
+    for (i in 0..childCount - 1) {
+        if (getChildAt(i) === view) {
+            return true
+        }
+    }
+    return false
 }
