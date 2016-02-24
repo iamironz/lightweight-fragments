@@ -1,9 +1,86 @@
 # lightweight-fragments
 Lightweight android fragment implementation. Uses base activity stack lifecycle
 
-Using:
---------
+Using fragment manager:
+-----------------------
 
+**Create fragment manager instance:**
+
+    manager = new FragmentManager(this, R.id.container, toolbar);
+    manager.setStackChangeListener(new StackChangeListener() {
+        @Override
+        public void onStackChanged(Fragment fragment, FragmentMeta meta) {
+            //do something with stack changes
+        }
+    });
+    
+        
+**To opening fragment:**
+
+    manager.openFragment(new MainFragment());
+
+    
+**To close fragment:**
+
+    final Fragment fragment = new MainFragment();
+    manager.closeFragment(fragment);
+
+
+**To close by instance:**
+
+    manager.closeFragment(MainFragment.class);    
+
+    
+**To pop fragment:**
+
+    manager.popFragment(MainFragment.class);
+
+
+**Back pressing handling:**
+
+    @Override
+    public void onBackPressed() {
+    
+        //some actions
+
+        if (manager.isActionModeEnabled()) {
+            manager.disableActionMode();
+            return;
+        }
+
+        if (manager.hasNotEndedActions()) {
+            manager.onActionEndRequired();
+            return;
+        }
+
+        if(manager.getStackCount() > 1) {
+            manager.closeLastFragment();
+            return;
+        }
+
+        super.onBackPressed();
+        manager.destroyStack(); //do not use into onDestroy invocation for two-way orientation!!!
+    }
+    
+
+**Activity lifecycle handling:**
+
+    @Override
+    protected void onResume() {
+        manager.onResume();
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        manager.onPause();
+        super.onPause();
+    }
+    
+    
+   
+Fragment implementation:
+--------
 ```
     @FragmentMeta(analytic = R.string.some_analytic_title,  //for getting analytic title
             name = R.string.some_fragment_name, //for setting title into toolbar
