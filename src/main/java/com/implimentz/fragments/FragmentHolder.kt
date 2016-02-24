@@ -44,7 +44,7 @@ object FragmentHolder {
                 it.fragment.setConfigurationChanged()
             }
             it.filter {
-                it.fragment.isFinished.not()
+                it.fragment.finished.not()
             }.forEach {
                 it.fragment.onConfigurationChanged(newConfig)
                 it.fragment.onPause()

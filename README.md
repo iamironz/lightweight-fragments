@@ -4,100 +4,98 @@ Lightweight android fragment implementation. Uses base activity stack lifecycle
 Using:
 --------
 
-**Create fragment manager instance:**
-
-    manager = new FragmentManager(this, R.id.container, toolbar);
-    manager.setStackChangeListener(new StackChangeListener() {
-        @Override
-        public void onStackChanged(Fragment fragment, FragmentMeta meta) {
-            //do something with stack changes
-        }
-    });
+```
+    @FragmentMeta(analytic = R.string.some_analytic_title,  //for getting analytic title
+            name = R.string.some_fragment_name, //for setting title into toolbar
+            isRoot = false, //for screen layer indication (material sandwich/arrow icon)
+            analyticHit = true, //allow hit this fragment in analytic
+            id = R.integer.some_fragment_id,  //some unique fragment id
+            toolbarShadow = false //control toolbar shadow (e.g tabs, inline view elements)
+    )
+    @FragmentLayout(R.layout.fragment_search_main_page) // for root view inflating
+    @FragmentMenu(R.menu.search_menu) //for menu inflating
     
-        
-**To opening fragment by instance:**
+    //Parametrized types for argument/owner determination
+    public class SomeFragment extends Fragment<Arguments, MainActivity> {
 
-    manager.openFragment(new MainFragment());
-
-    
-**To close fragment:**
-
-    final Fragment fragment = new MainFragment();
-    manager.closeFragment(fragment);
-
-
-**To pop fragment:**
-
-    manager.popFragment(MainFragment.class);
-
-
-**Back pressing handling:**
-
-    @Override
-    public void onBackPressed() {
-    
-        //some actions
-
-        if (manager.isActionModeEnabled()) {
-            manager.disableActionMode();
-            return;
-        }
-
-        if (manager.hasNotEndedActions()) {
-            manager.onActionEndRequired();
-            return;
-        }
-
-        if(manager.getStackCount() > 1) {
-            manager.closeLastFragment();
-            return;
-        }
-
-        super.onBackPressed();
-        manager.destroyStack(); //do not use into onDestroy invocation for two-way orientation!!!
+    public SomeFragment() {
+        super();
     }
-    
-**Activity lifecycle handling:**
 
+    //passing for getArgs() return parametrized argument
+    public SomeFragment(@Nullable Arguments args) {
+        super(args);
+    }
+
+    //calls while screen orientation is changed
     @Override
-    protected void onResume() {
-        manager.onResume();
+    public void onConfigurationChanged(@NotNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
+
+    //calls after @FragmentLayout layout created and added in container
+    @Override
+    public void onViewCreated(@NotNull View view, @Nullable Arguments arguments) {
+        super.onViewCreated(view, arguments);
+    }
+
+    //calls after activity created/restored
+    @Override
+    public void onResume() {
         super.onResume();
     }
 
+    //calls after activity is minimized/overlapped
     @Override
-    protected void onPause() {
-        manager.onPause();
+    public void onPause() {
         super.onPause();
     }
-    
-**Menu creating and menu item click handle:**
 
+    //calls after activity configuration changed/destroyed
     @Override
-    public Integer onCreateOptionMenu(@NonNull Menu menu) {
-        return R.menu.main;
+    public void onDestroy() {
+        super.onDestroy();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        //handle with some actions
-        return super.onOptionsItemSelected(item);
-    }
-    
-**Handle interrupted fragment actions:**
-
-    b = true;
-
+    //calls after FragmentManager onBackPressed() method called
+    // onBackPressed() has no fragment closing expected effect while return 'true'
     @Override
     public boolean hasNotEndedAction() {
-        return b;
+        return true;
     }
 
+    //calls after hasNotEndedAction() has return 'true'
     @Override
     public void onActionEndRequired() {
-        //show exit confirmation dialog (for example)
-        b = false;
+        super.onActionEndRequired();
     }
+
+    //FragmentManager helper for getting current fragment behavior
+    @Override
+    public boolean isActionModeEnabled() {
+        return false;
+    }
+
+    //calls after @FragmentMenu created and displayed
+    @Override
+    public void onMenuCreated(@NotNull Menu menu) {
+        super.onMenuCreated(menu);
+    }
+
+    //calls after some menu item was clicked
+    @Override
+    public boolean onOptionsItemSelected(@NotNull MenuItem item) {
+        return super.onOptionsItemSelected(item);
+    }
+
+    //calls after back button was perssed
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+}
+
+```
 
 # License
 

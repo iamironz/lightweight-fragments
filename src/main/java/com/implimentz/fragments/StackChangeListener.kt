@@ -1,5 +1,7 @@
 package com.implimentz.fragments
 
+import android.support.v7.app.AppCompatActivity
+
 /**
  * Created by ironz
  * Author: ironz
@@ -7,5 +9,5 @@ package com.implimentz.fragments
  * Email: implimentz@gmail.com
  */
 interface StackChangeListener {
-    fun onStackChanged(meta: FragmentMeta)
+    fun <D, A: AppCompatActivity> onStackChanged(fragment: Fragment<D, A>, meta: FragmentMeta)
 }

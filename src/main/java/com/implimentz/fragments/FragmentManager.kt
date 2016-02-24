@@ -18,7 +18,6 @@ class FragmentManager(private val activity: AppCompatActivity,
                       private val containerId: Int,
                       private val toolbar: Toolbar) {
 
-    private val annotationManager: AnnotationManager = AnnotationManager()
     private val handler: Handler = Handler()
 
     lateinit private var container: ViewGroup
@@ -51,7 +50,7 @@ class FragmentManager(private val activity: AppCompatActivity,
         val data = stack.last()
         val fragment = data.fragment
 
-        if (fragment.isShowing.not()) {
+        if (fragment.showing.not()) {
             return
         }
 
@@ -73,6 +72,13 @@ class FragmentManager(private val activity: AppCompatActivity,
 
     private fun getStack(): MutableList<FragmentData<out Any, out AppCompatActivity>> {
         return FragmentHolder.getStackById(containerId)
+    }
+
+    fun getFragments(): MutableList<Fragment<out Any, out AppCompatActivity>> {
+        return FragmentHolder.getStackById(containerId)
+                .map {
+                    it.fragment
+                }.toMutableList()
     }
 
     fun openFragment(name: String, fragment: Fragment<out Any, out AppCompatActivity>) {
@@ -176,7 +182,7 @@ class FragmentManager(private val activity: AppCompatActivity,
             return
         }
 
-        val item = stack[stack.lastIndex]
+        val item = stack.last()
         item.fragment.onBackPressed()
     }
 
@@ -250,7 +256,7 @@ class FragmentManager(private val activity: AppCompatActivity,
 
     private fun open(fragment: Fragment<out Any, out AppCompatActivity>) {
 
-        if (fragment.isShowing) {
+        if (fragment.showing) {
             return
         }
 
@@ -258,17 +264,18 @@ class FragmentManager(private val activity: AppCompatActivity,
 
         val view = fragment.constructView()
 
-        setMenu(fragment)
-
-        if(container.contains(view).not()) {
+        if (container.contains(view).not()) {
             container.addView(view)
         }
 
         fragment.onResume()
 
-        val meta = annotationManager.getFragmentMeta(fragment)
+        clearMenu()
+        setMenu(fragment)
+
+        val meta = AnnotationManager.getMeta(fragment)
         updateToolbar(fragment, meta)
-        sendFragmentOpened(meta)
+        sendFragmentOpened(fragment, meta)
     }
 
     private fun updateToolbar(fragment: Fragment<out Any, out AppCompatActivity>, meta: FragmentMeta) {
@@ -283,9 +290,9 @@ class FragmentManager(private val activity: AppCompatActivity,
         }
     }
 
-    private fun sendFragmentOpened(meta: FragmentMeta) {
+    private fun sendFragmentOpened(fragment: Fragment<out Any, out AppCompatActivity>, meta: FragmentMeta) {
         listener?.let {
-            it.onStackChanged(meta)
+            it.onStackChanged(fragment, meta)
         }
     }
 
@@ -298,7 +305,7 @@ class FragmentManager(private val activity: AppCompatActivity,
 
         val fragment = stack.last().fragment
 
-        return fragment.isShowing && fragment.onActionModeEnabled()
+        return fragment.showing && fragment.isActionModeEnabled()
 
     }
 
@@ -311,7 +318,7 @@ class FragmentManager(private val activity: AppCompatActivity,
 
         val fragment = stack.last().fragment
 
-        if (fragment.isShowing.not()) {
+        if (fragment.showing.not()) {
             return
         }
 
@@ -320,7 +327,7 @@ class FragmentManager(private val activity: AppCompatActivity,
 
     private fun close(fragment: Fragment<out Any, out AppCompatActivity>) {
 
-        if(container.contains(fragment.view)) {
+        if (container.contains(fragment.view)) {
             container.removeView(fragment.view)
         }
 
@@ -330,18 +337,16 @@ class FragmentManager(private val activity: AppCompatActivity,
     }
 
     private fun setMenu(fragment: Fragment<out Any, out AppCompatActivity>) {
-        toolbar.menu.clear()
-        val resId = fragment.onCreateOptionMenu(toolbar.menu)
-        resId?.let {
-            toolbar.inflateMenu(it)
-            toolbar.setOnMenuItemClickListener {
-                fragment.onOptionsItemSelected(it)
-            }
+
+        fragment.onCreateOptionMenu(toolbar)
+        toolbar.setOnMenuItemClickListener {
+            fragment.onOptionsItemSelected(it)
         }
     }
 
     private fun clearMenu() {
         toolbar.menu.clear()
+        toolbar.setOnMenuItemClickListener(null)
     }
 
     fun getStackCount(): Int {

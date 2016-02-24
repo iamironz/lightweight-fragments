@@ -19,13 +19,13 @@ import android.widget.ImageView
  */
 open class Fragment<D, A : AppCompatActivity> {
 
-    private var finished: Boolean = false
-    val isFinished: Boolean
-        get() = finished
+    private var _finished: Boolean = false
+    val finished: Boolean
+        get() = _finished
 
-    private var showing: Boolean = false
-    val isShowing: Boolean
-        get() = showing
+    private var _showing: Boolean = false
+    val showing: Boolean
+        get() = _showing
 
     private var configurationChanged: Boolean = false
 
@@ -35,13 +35,13 @@ open class Fragment<D, A : AppCompatActivity> {
     val view: View?
         get() = v
 
-    private var args: D? = null
-    val arguments: D?
-        get() = args
+    private var _args: D? = null
+    val args: D?
+        get() = _args
 
-    private var activity: A? = null
+    private var _owner: A? = null
     val owner: A?
-        get() = activity
+        get() = _owner
 
     var title: String? = null
 
@@ -51,11 +51,11 @@ open class Fragment<D, A : AppCompatActivity> {
     private var actionMode: ActionMode? = null
 
     constructor() {
-        this.args = null
+        this._args = null
     }
 
     constructor(args: D?) {
-        this.args = args
+        this._args = args
     }
 
     protected fun clearViews() {
@@ -66,7 +66,7 @@ open class Fragment<D, A : AppCompatActivity> {
 
     @Suppress("UNCHECKED_CAST")
     fun setOwner(a: AppCompatActivity) {
-        this.activity = a as A
+        this._owner = a as A
     }
 
     private fun clearViews(v: View?) {
@@ -105,20 +105,20 @@ open class Fragment<D, A : AppCompatActivity> {
         return constructView()
     }
 
-    fun constructView(): View {
-        this.container = container
+    internal fun constructView(): View {
         if ((v == null) or configurationChanged) {
-            v = onCreateView(activity?.layoutInflater as LayoutInflater, container)
-            onViewCreated(v as View, arguments)
+            v = onCreateView(_owner?.layoutInflater as LayoutInflater, container)
+            onViewCreated(v as View, args)
         }
 
         configurationChanged = false
-        showing = true
+        _showing = true
         return v as View
     }
 
-    open fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
-        return View(activity)
+    private fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
+        val layoutId: Int = AnnotationManager.getLayoutId(this)
+        return inflater.inflate(layoutId, container, false)
     }
 
     open fun onViewCreated(view: View, arguments: D?) {
@@ -127,23 +127,23 @@ open class Fragment<D, A : AppCompatActivity> {
 
     @CallSuper
     open fun onResume() {
-        showing = true
+        _showing = true
     }
 
     @CallSuper
     open fun onPause() {
-        showing = false
+        _showing = false
     }
 
     @CallSuper
     open fun onDestroy() {
-        finished = true
-        showing = false
+        _finished = true
+        _showing = false
         configurationChanged = false
         clearViews()
         v = null
-        args = null
-        activity = null
+        _args = null
+        _owner = null
         title = null
         subTitle = null
         actionMode = null
@@ -159,7 +159,7 @@ open class Fragment<D, A : AppCompatActivity> {
     }
 
     fun startActionMode(callback: ActionMode.Callback): ActionMode? {
-        actionMode = activity?.startSupportActionMode(callback)
+        actionMode = _owner?.startSupportActionMode(callback)
         return actionMode
     }
 
@@ -167,13 +167,22 @@ open class Fragment<D, A : AppCompatActivity> {
         actionMode?.finish()
     }
 
-    open fun onActionModeEnabled(): Boolean {
+    open fun isActionModeEnabled(): Boolean {
         return false
     }
 
-    @MenuRes
-    open fun onCreateOptionMenu(menu: Menu): Int? {
-        return null
+    internal fun onCreateOptionMenu(toolbar: Toolbar) {
+
+        val menuId: Int = AnnotationManager.getMenuId(this)
+
+        if (menuId != 0) {
+            toolbar.inflateMenu(menuId)
+            onMenuCreated(toolbar.menu)
+        }
+    }
+
+    open fun onMenuCreated(menu: Menu) {
+
     }
 
     @CallSuper
@@ -186,21 +195,21 @@ open class Fragment<D, A : AppCompatActivity> {
     }
 
     fun closeSelf() {
-        activity?.onBackPressed()
+        _owner?.onBackPressed()
     }
 
-    val isHidden: Boolean get() = !showing
+    val isHidden: Boolean get() = !_showing
 
     fun getString(@StringRes stringId: Int): String? {
-        return activity?.getString(stringId)
+        return _owner?.getString(stringId)
     }
 
     fun getInt(@IntegerRes intId: Int): Int? {
-        return activity?.resources?.getInteger(intId)
+        return _owner?.resources?.getInteger(intId)
     }
 
     fun getColor(@ColorRes colorId: Int): Int {
-        return ContextCompat.getColor(activity, colorId)
+        return ContextCompat.getColor(_owner, colorId)
     }
 
     fun setContainer(container: ViewGroup) {
