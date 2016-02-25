@@ -52,7 +52,7 @@ object FragmentHolder {
         }
     }
 
-    fun register(id: Int) {
+    internal fun register(id: Int) {
         if (stack.containsKey(id)) {
             return
         }
@@ -60,7 +60,7 @@ object FragmentHolder {
         stack.put(id, ArrayList())
     }
 
-    fun unregister(id: Int) {
+    internal fun unregister(id: Int) {
         if (!stack.containsKey(id)) {
             return
         }

@@ -43,9 +43,9 @@ open class Fragment<D, A : AppCompatActivity> {
     val owner: A?
         get() = _owner
 
-    var title: String? = null
+    private var screenTitle: String? = null
 
-    var subTitle: String? = null
+    private var screenSubtitle: String? = null
 
     var toolbar: Toolbar? = null
     private var actionMode: ActionMode? = null
@@ -107,7 +107,17 @@ open class Fragment<D, A : AppCompatActivity> {
 
     internal fun constructView(): View {
         if ((v == null) or configurationChanged) {
-            v = onCreateView(_owner?.layoutInflater as LayoutInflater, container)
+
+            val inflater: LayoutInflater = _owner?.layoutInflater as LayoutInflater
+
+            val onCreatedView: View? = onCreateView(inflater, container)
+
+            if (onCreatedView == null) {
+                v = inflateViewFromLayoutRes(inflater, container)
+            } else {
+                v = onCreatedView;
+            }
+
             onViewCreated(v as View, args)
         }
 
@@ -116,7 +126,11 @@ open class Fragment<D, A : AppCompatActivity> {
         return v as View
     }
 
-    private fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
+    open fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View? {
+        return null;
+    }
+
+    private fun inflateViewFromLayoutRes(inflater: LayoutInflater, container: ViewGroup): View {
         val layoutId: Int = AnnotationManager.getLayoutId(this)
         return inflater.inflate(layoutId, container, false)
     }
@@ -144,8 +158,8 @@ open class Fragment<D, A : AppCompatActivity> {
         v = null
         _args = null
         _owner = null
-        title = null
-        subTitle = null
+        screenTitle = null
+        screenSubtitle = null
         actionMode = null
         toolbar = null
     }
@@ -214,5 +228,27 @@ open class Fragment<D, A : AppCompatActivity> {
 
     fun setContainer(container: ViewGroup) {
         this.container = container
+    }
+
+    fun getTitle(): String? {
+        return screenTitle
+    }
+
+    fun getSubtitle(): String? {
+        return screenSubtitle
+    }
+
+    fun setTitle(title: String) {
+        this.screenTitle = title
+        toolbar?.let {
+            it.title = title
+        }
+    }
+
+    fun setSubTitle(subtitle: String) {
+        this.screenSubtitle = subtitle
+        toolbar?.let {
+            it.subtitle = subtitle
+        }
     }
 }

@@ -34,9 +34,7 @@ class FragmentManager(private val activity: AppCompatActivity,
     }
 
     fun destroyStack() {
-        getStack().forEach {
-            it.fragment.onDestroy()
-        }
+        getStack().forEach { it.fragment.onDestroy() }
         FragmentHolder.unregister(containerId)
     }
 
@@ -76,9 +74,7 @@ class FragmentManager(private val activity: AppCompatActivity,
 
     fun getFragments(): MutableList<Fragment<out Any, out AppCompatActivity>> {
         return FragmentHolder.getStackById(containerId)
-                .map {
-                    it.fragment
-                }.toMutableList()
+                .map { it.fragment }.toMutableList()
     }
 
     fun openFragment(name: String, fragment: Fragment<out Any, out AppCompatActivity>) {
@@ -94,18 +90,18 @@ class FragmentManager(private val activity: AppCompatActivity,
     }
 
     fun openFragment(fragment: Fragment<out Any, out AppCompatActivity>, delay: Long) {
-        handler.postDelayed({
-            openFragment0(fragment.javaClass.name, fragment)
-        }, delay)
+        handler.postDelayed({ openFragment0(fragment.javaClass.name, fragment) }, delay)
     }
 
     private fun openFragment0(name: String, fragment: Fragment<out Any, out AppCompatActivity>) {
         val stack = getStack()
 
         if (stack.isEmpty().not()) {
+
             val data = stack.last()
             disableActionMode()
             data.fragment.onPause()
+
         }
 
         fragment.setOwner(activity)
@@ -273,15 +269,15 @@ class FragmentManager(private val activity: AppCompatActivity,
         clearMenu()
         setMenu(fragment)
 
-        val meta = AnnotationManager.getMeta(fragment)
+        val meta: FragmentMeta = AnnotationManager.getMeta(fragment)
         updateToolbar(fragment, meta)
         sendFragmentOpened(fragment, meta)
     }
 
     private fun updateToolbar(fragment: Fragment<out Any, out AppCompatActivity>, meta: FragmentMeta) {
         fragment.toolbar = toolbar
-        val title = fragment.title
-        val subTitle = fragment.subTitle
+        val title = fragment.getTitle()
+        val subTitle = fragment.getSubtitle()
         toolbar.subtitle = subTitle
         if (title == null) {
             toolbar.setTitle(meta.name)
