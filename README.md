@@ -22,13 +22,13 @@ Using fragment manager:
     
 **To close fragment:**
 
-    final Fragment fragment = new MainFragment();
-    manager.closeFragment(fragment);
+    manager.closeFragment(MainFragment.class);    
 
 
 **To close by instance:**
 
-    manager.closeFragment(MainFragment.class);    
+    final Fragment fragment = new MainFragment();
+    manager.closeFragment(fragment);
 
     
 **To pop fragment:**
