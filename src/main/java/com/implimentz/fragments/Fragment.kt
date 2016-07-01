@@ -15,7 +15,7 @@ import com.implimentz.fragments.annotation.AnnotationManager
  * email: implimentz@gmail.com
  * twitter: iamironz
  */
-open class Fragment<Data>(val arguments: Data? = null) {
+open class Fragment<Data>(val arguments: Data? = null) {     //passing for getArguments() return parametrized argument
 
     @Volatile internal var configurationChanged: Boolean = false
     @Volatile var finished: Boolean = false
@@ -27,11 +27,13 @@ open class Fragment<Data>(val arguments: Data? = null) {
     @Volatile var view: View? = null
         private set
 
+    //calls while screen orientation is changed
     @CallSuper
     open fun onConfigurationChanged(newConfig: Configuration) {
 
     }
 
+    //calls while fragment manager need to get new\created view
     internal fun constructView(container: ViewGroup, inflater: LayoutInflater): View {
         tryRecreateView(container, inflater)
         updateStartFlags()
@@ -50,21 +52,25 @@ open class Fragment<Data>(val arguments: Data? = null) {
         return inflater.inflate(meta.value, container, false)
     }
 
+    //calls after @FragmentLayout layout created and added in container
     @CallSuper
     open fun onViewCreated(view: View, arguments: Data?) {
 
     }
 
+    //calls after activity created/restored
     @CallSuper
     open fun onResume() {
         showing = true
     }
 
+    //calls after activity is minimized/overlapped
     @CallSuper
     open fun onPause() {
         showing = false
     }
 
+    //calls after activity configuration changed/destroyed
     @CallSuper
     open fun onDestroy() {
         updateStopFlags()
@@ -82,20 +88,24 @@ open class Fragment<Data>(val arguments: Data? = null) {
         configurationChanged = false
     }
 
+    //calls after FragmentManager onBackPressed() method called
     open fun hasNotEndedAction(): Boolean {
         return false
     }
 
+    //calls after hasNotEndedAction() has return 'true'
     open fun onActionEndRequired() {
 
     }
 
+    //calls after some menu item was clicked
     @Suppress("unused")
     @CallSuper
     open fun onOptionsItemSelected(item: MenuItem) {
 
     }
 
+    //calls after back button was perssed
     open fun onBackPressed() {
 
     }

@@ -67,14 +67,6 @@ Using fragment manager:
         manager.onPause();
         super.onPause();
     }
-    
-
-   
-Fragment implementation:
---------
-
-[Fragment implementation example]
-(https://github.com/Iamironz/lightweight-fragments/blob/master/src/test/java/com/implimentz/fragments/SomeFragment.java)
 
 # License
 
