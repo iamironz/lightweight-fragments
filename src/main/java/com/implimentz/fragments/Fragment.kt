@@ -22,7 +22,7 @@ open class Fragment<Data>(val arguments: Data? = null) {
         private set
     @Volatile var showing: Boolean = false
         private set
-    @Volatile lateinit var name: String
+    @Volatile var name: String? = null
         internal set
     @Volatile var view: View? = null
         private set

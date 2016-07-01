@@ -6,20 +6,19 @@ Using fragment manager:
 
 **Create fragment manager instance:**
 
-    manager = new FragmentManager(this, R.id.container, toolbar);
-    manager.setStackChangeListener(new StackChangeListener() {
-        @Override
-        public void onStackChanged(Fragment fragment, FragmentMeta meta) {
-            //do something with stack changes
-        }
-    });
-    
+        manager =  new FragmentManager(viewGroup, layoutInflater, new StackChangeListener() {
+            @Override
+            public <D> void onStackChanged(Fragment<D> fragment, FragmentMeta fragmentMeta) {
+
+            }
+        });
+
         
 **To opening fragment:**
 
     manager.openFragment(new MainFragment());
 
-    
+
 **To close fragment:**
 
     manager.closeFragment(MainFragment.class);    
@@ -40,13 +39,6 @@ Using fragment manager:
 
     @Override
     public void onBackPressed() {
-    
-        //some actions
-
-        if (manager.isActionModeEnabled()) {
-            manager.disableActionMode();
-            return;
-        }
 
         if (manager.hasNotEndedActions()) {
             manager.onActionEndRequired();
@@ -59,9 +51,8 @@ Using fragment manager:
         }
 
         super.onBackPressed();
-        manager.destroyStack(); //do not use into onDestroy invocation for two-way orientation!!!
+        manager.destroyStack(); //do not use this method into onDestroy invocation for two-way orientation!!!
     }
-    
 
 **Activity lifecycle handling:**
 
@@ -77,7 +68,7 @@ Using fragment manager:
         super.onPause();
     }
     
-    
+
    
 Fragment implementation:
 --------

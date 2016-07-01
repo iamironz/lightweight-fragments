@@ -97,8 +97,8 @@ class FragmentManager(private val container: ViewGroup,
         val stack = getStack()
 
         if (stack.isEmpty().not()) {
-            val fragment = stack.last()
-            fragment.onPause()
+            val last = stack.last()
+            last.onPause()
         }
 
         fragment.name = name
@@ -304,5 +304,9 @@ class FragmentManager(private val container: ViewGroup,
     @Suppress("unused")
     fun getStackCount(): Int {
         return getStack().size
+    }
+
+    fun stackIsEmpty(): Boolean {
+        return getStack().isEmpty()
     }
 }
