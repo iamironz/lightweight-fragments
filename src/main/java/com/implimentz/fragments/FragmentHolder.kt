@@ -3,9 +3,9 @@ package com.implimentz.fragments
 import android.content.ComponentCallbacks
 import android.content.Context
 import android.content.res.Configuration
-import android.support.v7.app.AppCompatActivity
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * Created by ironz.
@@ -17,9 +17,11 @@ import java.util.concurrent.ConcurrentHashMap
 object FragmentHolder {
 
     private var registered: Boolean = false
-    private val stack: MutableMap<Int, MutableList<FragmentData<out Any, out AppCompatActivity>>> = ConcurrentHashMap()
+    private val stack: MutableMap<Int, MutableList<Fragment<out Any>>> = ConcurrentHashMap()
 
+    @Suppress("unused")
     fun init(context: Context) {
+
         if (registered) {
             return
         }
@@ -32,7 +34,6 @@ object FragmentHolder {
         override fun onConfigurationChanged(newConfig: Configuration) {
             notifyConfigurationChanged(newConfig)
         }
-
         override fun onLowMemory() {
             //not needed
         }
@@ -40,15 +41,23 @@ object FragmentHolder {
 
     private fun notifyConfigurationChanged(newConfig: Configuration) {
         stack.values.forEach {
-            it.forEach {
-                it.fragment.setConfigurationChanged()
-            }
-            it.filter {
-                it.fragment.finished.not()
-            }.forEach {
-                it.fragment.onConfigurationChanged(newConfig)
-                it.fragment.onPause()
-            }
+            setForAllConfigChanges(it)
+            callAllForConfigurationChanged(it, newConfig)
+        }
+    }
+
+    private fun callAllForConfigurationChanged(it: MutableList<Fragment<out Any>>, newConfig: Configuration) {
+        it.filter {
+            it.finished.not()
+        }.forEach {
+            it.onConfigurationChanged(newConfig)
+            it.onPause()
+        }
+    }
+
+    private fun setForAllConfigChanges(it: MutableList<Fragment<out Any>>) {
+        it.forEach {
+            it.configurationChanged = true
         }
     }
 
@@ -68,12 +77,7 @@ object FragmentHolder {
         stack.remove(id)
     }
 
-    internal fun getStackById(id: Int): MutableList<FragmentData<out Any, out AppCompatActivity>> {
-        if (!stack.containsKey(id)) {
-            return ArrayList()
-        }
-
-        return stack[id]!!
+    internal fun getStackById(id: Int): MutableList<Fragment<out Any>> {
+        return stack[id] ?: CopyOnWriteArrayList()
     }
-
 }

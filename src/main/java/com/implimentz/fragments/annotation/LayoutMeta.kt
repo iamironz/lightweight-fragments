@@ -1,4 +1,4 @@
-package com.implimentz.fragments
+package com.implimentz.fragments.annotation
 
 import android.support.annotation.LayoutRes
 import kotlin.annotation.AnnotationRetention.RUNTIME
@@ -15,4 +15,4 @@ import kotlin.annotation.AnnotationTarget.FILE
 @Target(CLASS, FILE)
 @Retention(RUNTIME)
 annotation
-class FragmentLayout(@LayoutRes val value: Int)
+class LayoutMeta(@LayoutRes val value: Int)

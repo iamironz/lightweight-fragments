@@ -1,6 +1,5 @@
-package com.implimentz.fragments
+package com.implimentz.fragments.annotation
 
-import android.support.annotation.IntegerRes
 import android.support.annotation.StringRes
 import kotlin.annotation.AnnotationRetention.RUNTIME
 import kotlin.annotation.AnnotationTarget.CLASS
@@ -19,9 +18,9 @@ annotation
 /**
  * Annotation for annotating fragment class and getting from it fragment meta information
  */
-class FragmentMeta(val isRoot: Boolean = false,
+@Suppress("unused")
+class FragmentMeta(@StringRes val name: Int,
+                   val isRoot: Boolean = false,
                    val toolbarShadow: Boolean = true,
-                   val analyticHit: Boolean = true,
-                   @StringRes val name: Int,
-                   @StringRes val analytic: Int,
-                   @IntegerRes val id: Int = 0)
+                   val analyticHit: Boolean = false,
+                   @StringRes val analyticName: Int)

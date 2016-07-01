@@ -1,9 +1,9 @@
 package com.implimentz.fragments
 
 import android.os.Handler
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.Toolbar
+import android.view.LayoutInflater
 import android.view.ViewGroup
+import com.implimentz.fragments.annotation.AnnotationManager
 import java.util.*
 
 /**
@@ -13,40 +13,34 @@ import java.util.*
  * email: implimentz@gmail.com
  * twitter: iamironz
  */
-@SuppressWarnings("unchecked")
-class FragmentManager(private val activity: AppCompatActivity,
-                      private val containerId: Int,
-                      private val toolbar: Toolbar) {
+
+@Suppress("unused")
+class FragmentManager(private val container: ViewGroup,
+                      private val inflater: LayoutInflater,
+                      private val listener: StackChangeListener) {
 
     private val handler: Handler = Handler()
 
-    lateinit private var container: ViewGroup
-
-    private var listener: StackChangeListener? = null
-
     init {
-        FragmentHolder.register(containerId)
-        container = activity.findViewById(containerId) as ViewGroup
+        FragmentHolder.register(container.id)
     }
 
-    fun setStackChangeListener(listener: StackChangeListener) {
-        this.listener = listener
-    }
-
+    @Suppress("unused")
     fun destroyStack() {
-        getStack().forEach { it.fragment.onDestroy() }
-        FragmentHolder.unregister(containerId)
+        getStack().forEach { it.onDestroy() }
+        FragmentHolder.unregister(container.id)
     }
 
+    @Suppress("unused")
     fun onPause() {
+
         val stack = getStack()
 
         if (stack.isEmpty()) {
             return
         }
 
-        val data = stack.last()
-        val fragment = data.fragment
+        val fragment = stack.last()
 
         if (fragment.showing.not()) {
             return
@@ -55,86 +49,93 @@ class FragmentManager(private val activity: AppCompatActivity,
         fragment.onPause()
     }
 
+    @Suppress("unused")
     fun onResume() {
+
         val stack = getStack()
 
         if (stack.isEmpty()) {
             return
         }
 
-        val data = stack.last()
-        val fragment = data.fragment
+        val fragment = stack.last()
 
-        open(fragment)
+        tryShow(fragment)
     }
 
-    private fun getStack(): MutableList<FragmentData<out Any, out AppCompatActivity>> {
-        return FragmentHolder.getStackById(containerId)
+    private fun getStack(): MutableList<Fragment<out Any>> {
+        return FragmentHolder.getStackById(container.id)
     }
 
-    fun getFragments(): MutableList<Fragment<out Any, out AppCompatActivity>> {
-        return FragmentHolder.getStackById(containerId)
-                .map { it.fragment }.toMutableList()
+    @Suppress("unused")
+    fun getFragments(): MutableList<Fragment<out Any>> {
+        return getStack()
     }
 
-    fun openFragment(name: String, fragment: Fragment<out Any, out AppCompatActivity>) {
+    @Suppress("unused")
+    fun openFragment(name: String, fragment: Fragment<out Any>) {
         openFragment0(name, fragment)
     }
 
-    fun openFragment(name: String, fragment: Fragment<out Any, out AppCompatActivity>, delay: Long) {
+    @Suppress("unused")
+    fun openFragment(name: String, fragment: Fragment<out Any>, delay: Long) {
         handler.postDelayed({ openFragment0(name, fragment) }, delay)
     }
 
-    fun openFragment(fragment: Fragment<out Any, out AppCompatActivity>) {
+    @Suppress("unused")
+    fun openFragment(fragment: Fragment<out Any>) {
         openFragment0(fragment.javaClass.name, fragment)
     }
 
-    fun openFragment(fragment: Fragment<out Any, out AppCompatActivity>, delay: Long) {
+    @Suppress("unused")
+    fun openFragment(fragment: Fragment<out Any>, delay: Long) {
         handler.postDelayed({ openFragment0(fragment.javaClass.name, fragment) }, delay)
     }
 
-    private fun openFragment0(name: String, fragment: Fragment<out Any, out AppCompatActivity>) {
+    private fun openFragment0(name: String, fragment: Fragment<out Any>) {
+
         val stack = getStack()
 
         if (stack.isEmpty().not()) {
-
-            val data = stack.last()
-            disableActionMode()
-            data.fragment.onPause()
-
+            val fragment = stack.last()
+            fragment.onPause()
         }
 
-        fragment.setOwner(activity)
+        fragment.name = name
 
-        stack.add(FragmentData(name, fragment))
+        stack.add(fragment)
 
-        open(fragment)
+        tryShow(fragment)
     }
 
-    fun popFragment(fragment: Fragment<out Any, out AppCompatActivity>): Boolean {
+    @Suppress("unused")
+    fun popFragment(fragment: Fragment<out Any>): Boolean {
         return popFragment0(fragment.javaClass.name)
     }
 
-    fun popFragment(fragment: Class<out Fragment<out Any, out AppCompatActivity>>): Boolean {
+    @Suppress("unused")
+    fun popFragment(fragment: Class<out Fragment<out Any>>): Boolean {
         return popFragment0(fragment.name)
     }
 
+    @Suppress("unused")
     fun popFragment(name: String): Boolean {
         return popFragment0(name)
     }
 
     private fun popFragment0(name: String): Boolean {
+
         val stack = getStack()
 
         if (stack.isEmpty()) {
             return false
         }
 
-        for (i in stack.indices) {
-            val data = stack[i]
-            if (data.name == name) {
+        for (i in stack.indices) { //TODO implement foreach indexed with returning values
+            val fragment = stack[i]
+            if (fragment.name == name) {
                 closeFragmentRange(i.inc())
-                open(data.fragment)
+                tryShow(fragment)
                 return true
             }
         }
@@ -143,20 +144,23 @@ class FragmentManager(private val activity: AppCompatActivity,
     }
 
     private fun closeFragmentRange(start: Int) {
+
         val stack = getStack()
 
-        val forDeleting = ArrayList<FragmentData<out Any, out AppCompatActivity>>()
+        val forDeleting = ArrayList<Fragment<out Any>>()
 
         for (i in start..stack.lastIndex) {
-            val data = stack[i]
-            close(data.fragment)
-            forDeleting.add(data)
+            val fragment = stack[i]
+            tryClose(fragment)
+            forDeleting.add(fragment)
         }
 
         stack.removeAll(forDeleting)
     }
 
+    @Suppress("unused")
     fun closeLastFragment() {
+
         val stack = getStack()
 
         if (stack.isEmpty() || stack.size < 2) {
@@ -164,14 +168,16 @@ class FragmentManager(private val activity: AppCompatActivity,
         }
 
         val old = stack.removeAt(stack.lastIndex)
-        close(old.fragment)
+        tryClose(old)
         getStack().remove(old)
 
         val actual = stack.last()
-        open(actual.fragment)
+        tryShow(actual)
     }
 
+    @Suppress("unused")
     fun onBackPressed() {
+
         val stack = getStack()
 
         if (stack.isEmpty() || stack.size < 2) {
@@ -179,63 +185,71 @@ class FragmentManager(private val activity: AppCompatActivity,
         }
 
         val item = stack.last()
-        item.fragment.onBackPressed()
+        item.onBackPressed()
     }
 
+    @Suppress("unused")
     fun hasNotEndedActions(): Boolean {
+
         val stack = getStack()
 
         if (stack.isEmpty()) {
             return false
         }
 
-        val fragment = stack.last().fragment
+        val fragment = stack.last()
 
         return fragment.hasNotEndedAction()
     }
 
+    @Suppress("unused")
     fun onActionEndRequired() {
+
         val stack = getStack()
 
         if (stack.isEmpty()) {
             return
         }
 
-        val fragment = stack.last().fragment
+        val fragment = stack.last()
 
         if (fragment.hasNotEndedAction()) {
             fragment.onActionEndRequired()
         }
     }
 
-    fun closeFragment(name: Fragment<out Any, out AppCompatActivity>) {
+    @Suppress("unused")
+    fun closeFragment(name: Fragment<out Any>) {
         closeFragment0(name.javaClass.name)
     }
 
-    fun closeFragment(fragment: Class<out Fragment<out Any, out AppCompatActivity>>) {
+    @Suppress("unused")
+    fun closeFragment(fragment: Class<out Fragment<out Any>>) {
         closeFragment0(fragment.name)
     }
 
+    @Suppress("unused")
     fun closeFragment(name: String) {
         closeFragment0(name)
     }
 
     private fun closeFragment0(name: String) {
+
         val stack = getStack()
 
         if (stack.isEmpty()) {
             return
         }
 
-        for (i in stack.lastIndex downTo 0) {
-            val data = stack[i]
-            if (data.name == name) {
-                close(data.fragment)
-                getStack().remove(data)
-                tryRestoreLast()
-                return
-            }
-        }
+        stack.asReversed()
+                .filter {
+                    it.name == name
+                }
+                .forEach {
+                    tryClose(it)
+                    getStack().remove(it)
+                    tryRestoreLast()
+                }
     }
 
     private fun tryRestoreLast() {
@@ -246,105 +260,48 @@ class FragmentManager(private val activity: AppCompatActivity,
             return
         }
 
-        val data = stack.last()
-        open(data.fragment)
+        val fragment = stack.last()
+        tryShow(fragment)
     }
 
-    private fun open(fragment: Fragment<out Any, out AppCompatActivity>) {
+    private fun tryShow(fragment: Fragment<out Any>) {
 
         if (fragment.showing) {
             return
         }
 
-        fragment.setContainer(container)
+        tryAddViewToFront(fragment)
+        callStackListener(fragment)
+    }
 
-        val view = fragment.constructView()
-
-        if (container.contains(view).not()) {
-            container.addView(view)
+    private fun tryAddViewToFront(fragment: Fragment<out Any>) {
+        val view = fragment.constructView(container, inflater)
+        if (container.contains(view)) {
+            return
         }
 
+        container.addView(view)
+        container.hidePrevious()
         fragment.onResume()
-
-        clearMenu()
-        setMenu(fragment)
-
-        val meta: FragmentMeta = AnnotationManager.getMeta(fragment)
-        updateToolbar(fragment, meta)
-        sendFragmentOpened(fragment, meta)
     }
 
-    private fun updateToolbar(fragment: Fragment<out Any, out AppCompatActivity>, meta: FragmentMeta) {
-        fragment.toolbar = toolbar
-        val title = fragment.getTitle()
-        val subTitle = fragment.getSubtitle()
-        toolbar.subtitle = subTitle
-        if (title == null) {
-            toolbar.setTitle(meta.name)
-        } else {
-            toolbar.title = title
-        }
+    private fun callStackListener(fragment: Fragment<out Any>) {
+        val meta = AnnotationManager.getFragmentMetaAnnotation(fragment)
+        listener.onStackChanged(fragment, meta)
     }
 
-    private fun sendFragmentOpened(fragment: Fragment<out Any, out AppCompatActivity>, meta: FragmentMeta) {
-        listener?.let {
-            it.onStackChanged(fragment, meta)
-        }
-    }
-
-    fun isActionModeEnabled(): Boolean {
-        val stack = getStack()
-
-        if (stack.isEmpty()) {
-            return false
-        }
-
-        val fragment = stack.last().fragment
-
-        return fragment.showing && fragment.isActionModeEnabled()
-
-    }
-
-    fun disableActionMode() {
-        val stack = getStack()
-
-        if (stack.isEmpty()) {
+    private fun tryClose(fragment: Fragment<out Any>) {
+        val view = fragment.view
+        if (container.contains(view).not()) {
             return
         }
 
-        val fragment = stack.last().fragment
-
-        if (fragment.showing.not()) {
-            return
-        }
-
-        fragment.finishActionMode()
-    }
-
-    private fun close(fragment: Fragment<out Any, out AppCompatActivity>) {
-
-        if (container.contains(fragment.view)) {
-            container.removeView(fragment.view)
-        }
-
-        clearMenu()
-
+        container.showPrevious()
+        container.removeView(view)
         fragment.onDestroy()
     }
 
-    private fun setMenu(fragment: Fragment<out Any, out AppCompatActivity>) {
-
-        fragment.onCreateOptionMenu(toolbar)
-        toolbar.setOnMenuItemClickListener {
-            fragment.onOptionsItemSelected(it)
-        }
-    }
-
-    private fun clearMenu() {
-        toolbar.menu.clear()
-        toolbar.setOnMenuItemClickListener(null)
-    }
-
+    @Suppress("unused")
     fun getStackCount(): Int {
         return getStack().size
     }

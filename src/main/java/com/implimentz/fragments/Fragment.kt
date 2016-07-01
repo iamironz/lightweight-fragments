@@ -1,14 +1,12 @@
 package com.implimentz.fragments
 
 import android.content.res.Configuration
-import android.support.annotation.*
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.view.ActionMode
-import android.support.v7.widget.Toolbar
-import android.view.*
-import android.widget.AdapterView
-import android.widget.ImageView
+import android.support.annotation.CallSuper
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import com.implimentz.fragments.annotation.AnnotationManager
 
 /**
  * Created by ironz.
@@ -17,151 +15,71 @@ import android.widget.ImageView
  * email: implimentz@gmail.com
  * twitter: iamironz
  */
-open class Fragment<D, A : AppCompatActivity> {
+open class Fragment<Data>(val arguments: Data? = null) {
 
-    private var _finished: Boolean = false
-    val finished: Boolean
-        get() = _finished
+    @Volatile internal var configurationChanged: Boolean = false
+    @Volatile var finished: Boolean = false
+        private set
+    @Volatile var showing: Boolean = false
+        private set
+    @Volatile lateinit var name: String
+        internal set
+    @Volatile var view: View? = null
+        private set
 
-    private var _showing: Boolean = false
-    val showing: Boolean
-        get() = _showing
-
-    private var configurationChanged: Boolean = false
-
-    private lateinit var container: ViewGroup
-
-    private var v: View? = null
-    val view: View?
-        get() = v
-
-    private var _args: D? = null
-    val args: D?
-        get() = _args
-
-    private var _owner: A? = null
-    val owner: A?
-        get() = _owner
-
-    private var screenTitle: String? = null
-
-    private var screenSubtitle: String? = null
-
-    var toolbar: Toolbar? = null
-    private var actionMode: ActionMode? = null
-
-    constructor() {
-        this._args = null
-    }
-
-    constructor(args: D?) {
-        this._args = args
-    }
-
-    protected fun clearViews() {
-        if (v != null) {
-            clearViews(v)
-        }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    fun setOwner(a: AppCompatActivity) {
-        this._owner = a as A
-    }
-
-    private fun clearViews(v: View?) {
-        if (v == null) {
-            return
-        }
-        try {
-            if (v.background != null) {
-                v.background.callback = null
-                return
-            }
-            if (v is ImageView) {
-                v.setImageBitmap(null)
-                return
-            }
-            if (v is ViewGroup && v !is AdapterView<*>) {
-                for (i in 0..v.childCount - 1) {
-                    clearViews(v.getChildAt(i))
-                }
-                v.removeAllViews()
-            }
-        } catch (ignored: Exception) {
-
-        }
-    }
-
-    internal fun setConfigurationChanged() {
-        configurationChanged = true
-    }
-
+    @CallSuper
     open fun onConfigurationChanged(newConfig: Configuration) {
 
     }
 
-    fun getConstructView(): View {
-        return constructView()
+    internal fun constructView(container: ViewGroup, inflater: LayoutInflater): View {
+        tryRecreateView(container, inflater)
+        updateStartFlags()
+        return view as View
     }
 
-    internal fun constructView(): View {
-        if ((v == null) or configurationChanged) {
-
-            val inflater: LayoutInflater = _owner?.layoutInflater as LayoutInflater
-
-            val onCreatedView: View? = onCreateView(inflater, container)
-
-            if (onCreatedView == null) {
-                v = inflateViewFromLayoutRes(inflater, container)
-            } else {
-                v = onCreatedView;
-            }
-
-            onViewCreated(v as View, args)
+    private fun tryRecreateView(container: ViewGroup, inflater: LayoutInflater) {
+        if ((view == null) or configurationChanged) {
+            view = inflateViewFromLayoutRes(inflater, container)
+            onViewCreated(view as View, arguments)
         }
-
-        configurationChanged = false
-        _showing = true
-        return v as View
-    }
-
-    open fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View? {
-        return null;
     }
 
     private fun inflateViewFromLayoutRes(inflater: LayoutInflater, container: ViewGroup): View {
-        val layoutId: Int = AnnotationManager.getLayoutId(this)
-        return inflater.inflate(layoutId, container, false)
+        val meta = AnnotationManager.getLayoutMetaAnnotation(this)
+        return inflater.inflate(meta.value, container, false)
     }
 
-    open fun onViewCreated(view: View, arguments: D?) {
+    @CallSuper
+    open fun onViewCreated(view: View, arguments: Data?) {
 
     }
 
     @CallSuper
     open fun onResume() {
-        _showing = true
+        showing = true
     }
 
     @CallSuper
     open fun onPause() {
-        _showing = false
+        showing = false
     }
 
     @CallSuper
     open fun onDestroy() {
-        _finished = true
-        _showing = false
+        updateStopFlags()
+    }
+
+    private fun updateStartFlags() {
+        finished = false
+        showing = true
         configurationChanged = false
-        clearViews()
-        v = null
-        _args = null
-        _owner = null
-        screenTitle = null
-        screenSubtitle = null
-        actionMode = null
-        toolbar = null
+    }
+
+    private fun updateStopFlags() {
+        finished = true
+        showing = false
+        configurationChanged = false
     }
 
     open fun hasNotEndedAction(): Boolean {
@@ -172,83 +90,13 @@ open class Fragment<D, A : AppCompatActivity> {
 
     }
 
-    fun startActionMode(callback: ActionMode.Callback): ActionMode? {
-        actionMode = _owner?.startSupportActionMode(callback)
-        return actionMode
-    }
-
-    fun finishActionMode() {
-        actionMode?.finish()
-    }
-
-    open fun isActionModeEnabled(): Boolean {
-        return false
-    }
-
-    internal fun onCreateOptionMenu(toolbar: Toolbar) {
-
-        val menuId: Int = AnnotationManager.getMenuId(this)
-
-        if (menuId != 0) {
-            toolbar.inflateMenu(menuId)
-            onMenuCreated(toolbar.menu)
-        }
-    }
-
-    open fun onMenuCreated(menu: Menu) {
-
-    }
-
+    @Suppress("unused")
     @CallSuper
-    open fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return false
+    open fun onOptionsItemSelected(item: MenuItem) {
+
     }
 
     open fun onBackPressed() {
 
-    }
-
-    fun closeSelf() {
-        _owner?.onBackPressed()
-    }
-
-    val isHidden: Boolean get() = !_showing
-
-    fun getString(@StringRes stringId: Int): String? {
-        return _owner?.getString(stringId)
-    }
-
-    fun getInt(@IntegerRes intId: Int): Int? {
-        return _owner?.resources?.getInteger(intId)
-    }
-
-    fun getColor(@ColorRes colorId: Int): Int {
-        return ContextCompat.getColor(_owner, colorId)
-    }
-
-    fun setContainer(container: ViewGroup) {
-        this.container = container
-    }
-
-    fun getTitle(): String? {
-        return screenTitle
-    }
-
-    fun getSubtitle(): String? {
-        return screenSubtitle
-    }
-
-    fun setTitle(title: String) {
-        this.screenTitle = title
-        toolbar?.let {
-            it.title = title
-        }
-    }
-
-    fun setSubTitle(subtitle: String) {
-        this.screenSubtitle = subtitle
-        toolbar?.let {
-            it.subtitle = subtitle
-        }
     }
 }
