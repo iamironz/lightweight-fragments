@@ -1,8 +1,11 @@
+@file:Suppress("unused")
+
 package com.implimentz.fragments
 
 import android.content.ComponentCallbacks
 import android.content.Context
 import android.content.res.Configuration
+import java.io.Serializable
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
@@ -17,9 +20,8 @@ import java.util.concurrent.CopyOnWriteArrayList
 object FragmentHolder {
 
     private var registered: Boolean = false
-    private val stack: MutableMap<Int, MutableList<Fragment<out Any>>> = ConcurrentHashMap()
-
-    @Suppress("unused")
+    private val stack: MutableMap<Int, MutableList<Fragment<out Serializable>>> = ConcurrentHashMap()
+    
     fun init(context: Context) {
 
         if (registered) {
@@ -46,7 +48,7 @@ object FragmentHolder {
         }
     }
 
-    private fun callAllForConfigurationChanged(it: MutableList<Fragment<out Any>>, newConfig: Configuration) {
+    private fun callAllForConfigurationChanged(it: MutableList<Fragment<out Serializable>>, newConfig: Configuration) {
         it.filter {
             it.finished.not()
         }.forEach {
@@ -55,7 +57,7 @@ object FragmentHolder {
         }
     }
 
-    private fun setForAllConfigChanges(it: MutableList<Fragment<out Any>>) {
+    private fun setForAllConfigChanges(it: MutableList<Fragment<out Serializable>>) {
         it.forEach {
             it.configurationChanged = true
         }
@@ -77,7 +79,7 @@ object FragmentHolder {
         stack.remove(id)
     }
 
-    internal fun getStackById(id: Int): MutableList<Fragment<out Any>> {
+    internal fun getStackById(id: Int): MutableList<Fragment<out Serializable>> {
         return stack[id] ?: CopyOnWriteArrayList()
     }
 }

@@ -1,6 +1,7 @@
 package com.implimentz.fragments
 
 import com.implimentz.fragments.annotation.FragmentMeta
+import java.io.Serializable
 
 /**
  * Created by ironz
@@ -9,5 +10,5 @@ import com.implimentz.fragments.annotation.FragmentMeta
  * Email: implimentz@gmail.com
  */
 interface StackChangeListener {
-    fun <D> onStackChanged(fragment: Fragment<D>, meta: FragmentMeta)
+    fun <D : Serializable> onStackChanged(fragment: Fragment<D>, meta: FragmentMeta)
 }

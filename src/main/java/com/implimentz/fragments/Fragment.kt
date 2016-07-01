@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.implimentz.fragments
 
 import android.content.res.Configuration
@@ -7,6 +9,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import com.implimentz.fragments.annotation.AnnotationManager
+import java.io.Serializable
 
 /**
  * Created by ironz.
@@ -15,7 +18,7 @@ import com.implimentz.fragments.annotation.AnnotationManager
  * email: implimentz@gmail.com
  * twitter: iamironz
  */
-open class Fragment<Data>(val arguments: Data? = null) {     //passing for getArguments() return parametrized argument
+open class Fragment<Data : Serializable>(val arguments: Data? = null) {     //passing for getArguments() return parametrized argument
 
     @Volatile internal var configurationChanged: Boolean = false
     @Volatile var finished: Boolean = false
@@ -99,7 +102,6 @@ open class Fragment<Data>(val arguments: Data? = null) {     //passing for getAr
     }
 
     //calls after some menu item was clicked
-    @Suppress("unused")
     @CallSuper
     open fun onOptionsItemSelected(item: MenuItem) {
 

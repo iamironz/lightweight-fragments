@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.implimentz.fragments.annotation
 
 import android.support.annotation.LayoutRes

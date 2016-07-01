@@ -2,6 +2,7 @@ package com.implimentz.fragments.annotation
 
 import android.util.NoSuchPropertyException
 import com.implimentz.fragments.Fragment
+import java.io.Serializable
 import java.util.*
 
 
@@ -17,15 +18,15 @@ internal object AnnotationManager {
     private val metasMap: MutableMap<Int, FragmentMeta> = HashMap()
     private val layoutsMap: MutableMap<Int, LayoutMeta> = HashMap()
 
-    fun <D> getFragmentMetaAnnotation(fragment: Fragment<D>): FragmentMeta {
+    fun <D : Serializable> getFragmentMetaAnnotation(fragment: Fragment<D>): FragmentMeta {
         return getMetaFromCacheOrRaw(fragment, metasMap)
     }
 
-    fun <D> getLayoutMetaAnnotation(fragment: Fragment<D>): LayoutMeta {
+    fun <D : Serializable> getLayoutMetaAnnotation(fragment: Fragment<D>): LayoutMeta {
         return getMetaFromCacheOrRaw(fragment, layoutsMap)
     }
 
-    private inline fun <D, reified A : Annotation> getMetaFromCacheOrRaw(fragment: Fragment<D>, map: MutableMap<Int, A>): A {
+    private inline fun <D : Serializable, reified A : Annotation> getMetaFromCacheOrRaw(fragment: Fragment<D>, map: MutableMap<Int, A>): A {
 
         val hashCode = fragment.hashCode()
 

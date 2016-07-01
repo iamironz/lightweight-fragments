@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.implimentz.fragments.annotation
 
 import android.support.annotation.StringRes
@@ -18,7 +20,6 @@ annotation
 /**
  * Annotation for annotating fragment class and getting from it fragment meta information
  */
-@Suppress("unused")
 class FragmentMeta(@StringRes val name: Int,
                    val isRoot: Boolean = false,
                    val toolbarShadow: Boolean = true,

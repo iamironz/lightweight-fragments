@@ -1,9 +1,12 @@
+@file:Suppress("unused")
+
 package com.implimentz.fragments
 
 import android.os.Handler
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.implimentz.fragments.annotation.AnnotationManager
+import java.io.Serializable
 import java.util.*
 
 /**
@@ -14,7 +17,7 @@ import java.util.*
  * twitter: iamironz
  */
 
-@Suppress("unused")
+
 class FragmentManager(private val container: ViewGroup,
                       private val inflater: LayoutInflater,
                       private val listener: StackChangeListener) {
@@ -25,13 +28,13 @@ class FragmentManager(private val container: ViewGroup,
         FragmentHolder.register(container.id)
     }
 
-    @Suppress("unused")
+    
     fun destroyStack() {
         getStack().forEach { it.onDestroy() }
         FragmentHolder.unregister(container.id)
     }
 
-    @Suppress("unused")
+    
     fun onPause() {
 
         val stack = getStack()
@@ -49,7 +52,7 @@ class FragmentManager(private val container: ViewGroup,
         fragment.onPause()
     }
 
-    @Suppress("unused")
+    
     fun onResume() {
 
         val stack = getStack()
@@ -63,36 +66,36 @@ class FragmentManager(private val container: ViewGroup,
         tryShow(fragment)
     }
 
-    private fun getStack(): MutableList<Fragment<out Any>> {
+    private fun getStack(): MutableList<Fragment<out Serializable>> {
         return FragmentHolder.getStackById(container.id)
     }
 
-    @Suppress("unused")
-    fun getFragments(): MutableList<Fragment<out Any>> {
+    
+    fun getFragments(): MutableList<Fragment<out Serializable>> {
         return getStack()
     }
 
-    @Suppress("unused")
-    fun openFragment(name: String, fragment: Fragment<out Any>) {
+    
+    fun openFragment(name: String, fragment: Fragment<out Serializable>) {
         openFragment0(name, fragment)
     }
 
-    @Suppress("unused")
-    fun openFragment(name: String, fragment: Fragment<out Any>, delay: Long) {
+    
+    fun openFragment(name: String, fragment: Fragment<out Serializable>, delay: Long) {
         handler.postDelayed({ openFragment0(name, fragment) }, delay)
     }
 
-    @Suppress("unused")
-    fun openFragment(fragment: Fragment<out Any>) {
+    
+    fun openFragment(fragment: Fragment<out Serializable>) {
         openFragment0(fragment.javaClass.name, fragment)
     }
 
-    @Suppress("unused")
-    fun openFragment(fragment: Fragment<out Any>, delay: Long) {
+    
+    fun openFragment(fragment: Fragment<out Serializable>, delay: Long) {
         handler.postDelayed({ openFragment0(fragment.javaClass.name, fragment) }, delay)
     }
 
-    private fun openFragment0(name: String, fragment: Fragment<out Any>) {
+    private fun openFragment0(name: String, fragment: Fragment<out Serializable>) {
 
         val stack = getStack()
 
@@ -108,17 +111,17 @@ class FragmentManager(private val container: ViewGroup,
         tryShow(fragment)
     }
 
-    @Suppress("unused")
-    fun popFragment(fragment: Fragment<out Any>): Boolean {
+    
+    fun popFragment(fragment: Fragment<out Serializable>): Boolean {
         return popFragment0(fragment.javaClass.name)
     }
 
-    @Suppress("unused")
-    fun popFragment(fragment: Class<out Fragment<out Any>>): Boolean {
+    
+    fun popFragment(fragment: Class<out Fragment<out Serializable>>): Boolean {
         return popFragment0(fragment.name)
     }
 
-    @Suppress("unused")
+    
     fun popFragment(name: String): Boolean {
         return popFragment0(name)
     }
@@ -147,7 +150,7 @@ class FragmentManager(private val container: ViewGroup,
 
         val stack = getStack()
 
-        val forDeleting = ArrayList<Fragment<out Any>>()
+        val forDeleting = ArrayList<Fragment<out Serializable>>()
 
         for (i in start..stack.lastIndex) {
             val fragment = stack[i]
@@ -158,7 +161,7 @@ class FragmentManager(private val container: ViewGroup,
         stack.removeAll(forDeleting)
     }
 
-    @Suppress("unused")
+    
     fun closeLastFragment() {
 
         val stack = getStack()
@@ -175,7 +178,7 @@ class FragmentManager(private val container: ViewGroup,
         tryShow(actual)
     }
 
-    @Suppress("unused")
+    
     fun onBackPressed() {
 
         val stack = getStack()
@@ -188,7 +191,7 @@ class FragmentManager(private val container: ViewGroup,
         item.onBackPressed()
     }
 
-    @Suppress("unused")
+    
     fun hasNotEndedActions(): Boolean {
 
         val stack = getStack()
@@ -202,7 +205,7 @@ class FragmentManager(private val container: ViewGroup,
         return fragment.hasNotEndedAction()
     }
 
-    @Suppress("unused")
+    
     fun onActionEndRequired() {
 
         val stack = getStack()
@@ -218,17 +221,16 @@ class FragmentManager(private val container: ViewGroup,
         }
     }
 
-    @Suppress("unused")
-    fun closeFragment(name: Fragment<out Any>) {
+    
+    fun closeFragment(name: Fragment<out Serializable>) {
         closeFragment0(name.javaClass.name)
     }
 
-    @Suppress("unused")
-    fun closeFragment(fragment: Class<out Fragment<out Any>>) {
+    
+    fun closeFragment(fragment: Class<out Fragment<out Serializable>>) {
         closeFragment0(fragment.name)
     }
 
-    @Suppress("unused")
     fun closeFragment(name: String) {
         closeFragment0(name)
     }
@@ -264,7 +266,7 @@ class FragmentManager(private val container: ViewGroup,
         tryShow(fragment)
     }
 
-    private fun tryShow(fragment: Fragment<out Any>) {
+    private fun tryShow(fragment: Fragment<out Serializable>) {
 
         if (fragment.showing) {
             return
@@ -274,7 +276,7 @@ class FragmentManager(private val container: ViewGroup,
         callStackListener(fragment)
     }
 
-    private fun tryAddViewToFront(fragment: Fragment<out Any>) {
+    private fun tryAddViewToFront(fragment: Fragment<out Serializable>) {
         val view = fragment.constructView(container, inflater)
         if (container.contains(view)) {
             return
@@ -285,12 +287,12 @@ class FragmentManager(private val container: ViewGroup,
         fragment.onResume()
     }
 
-    private fun callStackListener(fragment: Fragment<out Any>) {
+    private fun callStackListener(fragment: Fragment<out Serializable>) {
         val meta = AnnotationManager.getFragmentMetaAnnotation(fragment)
         listener.onStackChanged(fragment, meta)
     }
 
-    private fun tryClose(fragment: Fragment<out Any>) {
+    private fun tryClose(fragment: Fragment<out Serializable>) {
         val view = fragment.view
         if (container.contains(view).not()) {
             return
@@ -301,7 +303,7 @@ class FragmentManager(private val container: ViewGroup,
         fragment.onDestroy()
     }
 
-    @Suppress("unused")
+    
     fun getStackCount(): Int {
         return getStack().size
     }
