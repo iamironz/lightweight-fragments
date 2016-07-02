@@ -13,4 +13,4 @@ import java.io.Serializable
  */
 
 //marker class for using in parametrized type fragment without any arguments passed
-class NoArgs : Serializable
+class NoArgs private constructor() : Serializable

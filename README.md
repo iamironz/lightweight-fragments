@@ -6,12 +6,12 @@ Using fragment manager:
 
 **Create fragment manager instance:**
 
-        manager =  new FragmentManager(viewGroup, layoutInflater, new StackChangeListener() {
-            @Override
-            public <D> void onStackChanged(Fragment<D> fragment, FragmentMeta fragmentMeta) {
+    manager =  new FragmentManager(viewGroup, layoutInflater, new StackChangeListener() {
+        @Override
+        public <D> void onStackChanged(Fragment<D> fragment, FragmentMeta fragmentMeta) {
 
-            }
-        });
+        }
+    });
 
         
 **To opening fragment:**
