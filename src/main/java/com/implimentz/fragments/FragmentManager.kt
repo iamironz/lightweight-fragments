@@ -16,6 +16,10 @@ import java.util.*
  * email: implimentz@gmail.com
  * twitter: iamironz
  */
+
+/**
+ * Class that represent stack and base stack control with holding in App class
+ */
 class FragmentManager(private val container: ViewGroup,
                       private val inflater: LayoutInflater,
                       private val listener: StackChangeListener) {

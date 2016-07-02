@@ -1,4 +1,4 @@
-group 'fragments'
+group 'com.implimentz.fragments'
 version '0.2'
 
 apply plugin: 'com.android.library'
@@ -40,7 +40,14 @@ repositories {
 }
 
 dependencies {
+
     testCompile 'junit:junit:4.11'
+    testCompile "org.robolectric:robolectric:3.1"
+    testCompile "org.assertj:assertj-core:3.4.1"
+
+    testCompile 'com.android.support:support-annotations:24.0.0'
+    testCompile 'com.android.support:appcompat-v7:24.0.0'
+    testCompile 'org.jetbrains.kotlin:kotlin-stdlib:1.0.3'
 
     compile 'com.android.support:support-annotations:24.0.0'
     compile 'org.jetbrains.kotlin:kotlin-stdlib:1.0.3'
