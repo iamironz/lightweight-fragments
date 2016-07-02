@@ -45,7 +45,7 @@ Using fragment manager:
             return;
         }
 
-        if(manager.getStackCount() > 1) {
+        if(!manager.stackIsEmpty()) {
             manager.closeLastFragment();
             return;
         }

@@ -16,13 +16,12 @@ import java.util.*
  * email: implimentz@gmail.com
  * twitter: iamironz
  */
-
-
 class FragmentManager(private val container: ViewGroup,
                       private val inflater: LayoutInflater,
                       private val listener: StackChangeListener) {
 
     private val handler: Handler = Handler()
+    private val stack = FragmentHolder.getStackById(container.id)
 
     init {
         FragmentHolder.register(container.id)
@@ -30,14 +29,12 @@ class FragmentManager(private val container: ViewGroup,
 
     
     fun destroyStack() {
-        getStack().forEach { it.onDestroy() }
+        stack.forEach { it.onDestroy() }
         FragmentHolder.unregister(container.id)
     }
 
     
     fun onPause() {
-
-        val stack = getStack()
 
         if (stack.isEmpty()) {
             return
@@ -55,8 +52,6 @@ class FragmentManager(private val container: ViewGroup,
     
     fun onResume() {
 
-        val stack = getStack()
-
         if (stack.isEmpty()) {
             return
         }
@@ -66,13 +61,8 @@ class FragmentManager(private val container: ViewGroup,
         tryShow(fragment)
     }
 
-    private fun getStack(): MutableList<Fragment<out Serializable>> {
-        return FragmentHolder.getStackById(container.id)
-    }
-
-    
     fun getFragments(): MutableList<Fragment<out Serializable>> {
-        return getStack()
+        return stack
     }
 
     
@@ -96,8 +86,6 @@ class FragmentManager(private val container: ViewGroup,
     }
 
     private fun openFragment0(name: String, fragment: Fragment<out Serializable>) {
-
-        val stack = getStack()
 
         if (stack.isEmpty().not()) {
             val last = stack.last()
@@ -128,8 +116,6 @@ class FragmentManager(private val container: ViewGroup,
 
     private fun popFragment0(name: String): Boolean {
 
-        val stack = getStack()
-
         if (stack.isEmpty()) {
             return false
         }
@@ -148,8 +134,6 @@ class FragmentManager(private val container: ViewGroup,
 
     private fun closeFragmentRange(start: Int) {
 
-        val stack = getStack()
-
         val forDeleting = ArrayList<Fragment<out Serializable>>()
 
         for (i in start..stack.lastIndex) {
@@ -164,24 +148,18 @@ class FragmentManager(private val container: ViewGroup,
     
     fun closeLastFragment() {
 
-        val stack = getStack()
-
         if (stack.isEmpty() || stack.size < 2) {
             return
         }
 
-        val old = stack.removeAt(stack.lastIndex)
+        val old = stack[stack.lastIndex]
         tryClose(old)
-        getStack().remove(old)
-
-        val actual = stack.last()
-        tryShow(actual)
+        stack.remove(old)
+        tryRestoreLast()
     }
 
     
     fun onBackPressed() {
-
-        val stack = getStack()
 
         if (stack.isEmpty() || stack.size < 2) {
             return
@@ -194,8 +172,6 @@ class FragmentManager(private val container: ViewGroup,
     
     fun hasNotEndedActions(): Boolean {
 
-        val stack = getStack()
-
         if (stack.isEmpty()) {
             return false
         }
@@ -207,8 +183,6 @@ class FragmentManager(private val container: ViewGroup,
 
     
     fun onActionEndRequired() {
-
-        val stack = getStack()
 
         if (stack.isEmpty()) {
             return
@@ -237,8 +211,6 @@ class FragmentManager(private val container: ViewGroup,
 
     private fun closeFragment0(name: String) {
 
-        val stack = getStack()
-
         if (stack.isEmpty()) {
             return
         }
@@ -249,14 +221,12 @@ class FragmentManager(private val container: ViewGroup,
                 }
                 .forEach {
                     tryClose(it)
-                    getStack().remove(it)
+                    stack.remove(it)
                     tryRestoreLast()
                 }
     }
 
     private fun tryRestoreLast() {
-
-        val stack = getStack()
 
         if (stack.isEmpty()) {
             return
@@ -303,12 +273,11 @@ class FragmentManager(private val container: ViewGroup,
         fragment.onDestroy()
     }
 
-    
     fun getStackCount(): Int {
-        return getStack().size
+        return stack.size
     }
 
     fun stackIsEmpty(): Boolean {
-        return getStack().isEmpty()
+        return stack.size < 2
     }
 }
