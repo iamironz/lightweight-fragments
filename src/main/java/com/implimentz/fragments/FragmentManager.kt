@@ -2,7 +2,6 @@
 
 package com.implimentz.fragments
 
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.implimentz.fragments.annotation.AnnotationManager
@@ -24,7 +23,6 @@ class FragmentManager(private val container: ViewGroup,
                       private val inflater: LayoutInflater,
                       private val listener: StackChangeListener) {
 
-    private val handler: Handler = Handler()
     private val stack = FragmentHolder.getStackById(container.id)
 
     init {
@@ -70,16 +68,8 @@ class FragmentManager(private val container: ViewGroup,
         openFragment0(name, fragment)
     }
 
-    fun openFragment(name: String, fragment: Fragment<out Serializable>, delay: Long) {
-        handler.postDelayed({ openFragment0(name, fragment) }, delay)
-    }
-
     fun openFragment(fragment: Fragment<out Serializable>) {
         openFragment0(fragment.javaClass.name, fragment)
-    }
-
-    fun openFragment(fragment: Fragment<out Serializable>, delay: Long) {
-        handler.postDelayed({ openFragment0(fragment.javaClass.name, fragment) }, delay)
     }
 
     private fun openFragment0(name: String, fragment: Fragment<out Serializable>) {
