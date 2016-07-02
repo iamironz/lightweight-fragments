@@ -27,13 +27,11 @@ class FragmentManager(private val container: ViewGroup,
         FragmentHolder.register(container.id)
     }
 
-    
     fun destroyStack() {
         stack.forEach { it.onDestroy() }
         FragmentHolder.unregister(container.id)
     }
 
-    
     fun onPause() {
 
         if (stack.isEmpty()) {
@@ -49,7 +47,6 @@ class FragmentManager(private val container: ViewGroup,
         fragment.onPause()
     }
 
-    
     fun onResume() {
 
         if (stack.isEmpty()) {
@@ -65,22 +62,18 @@ class FragmentManager(private val container: ViewGroup,
         return stack
     }
 
-    
     fun openFragment(name: String, fragment: Fragment<out Serializable>) {
         openFragment0(name, fragment)
     }
 
-    
     fun openFragment(name: String, fragment: Fragment<out Serializable>, delay: Long) {
         handler.postDelayed({ openFragment0(name, fragment) }, delay)
     }
 
-    
     fun openFragment(fragment: Fragment<out Serializable>) {
         openFragment0(fragment.javaClass.name, fragment)
     }
 
-    
     fun openFragment(fragment: Fragment<out Serializable>, delay: Long) {
         handler.postDelayed({ openFragment0(fragment.javaClass.name, fragment) }, delay)
     }
@@ -99,17 +92,14 @@ class FragmentManager(private val container: ViewGroup,
         tryShow(fragment)
     }
 
-    
     fun popFragment(fragment: Fragment<out Serializable>): Boolean {
         return popFragment0(fragment.javaClass.name)
     }
 
-    
     fun popFragment(fragment: Class<out Fragment<out Serializable>>): Boolean {
         return popFragment0(fragment.name)
     }
 
-    
     fun popFragment(name: String): Boolean {
         return popFragment0(name)
     }
@@ -145,7 +135,6 @@ class FragmentManager(private val container: ViewGroup,
         stack.removeAll(forDeleting)
     }
 
-    
     fun closeLastFragment() {
 
         if (stack.isEmpty() || stack.size < 2) {
@@ -158,7 +147,6 @@ class FragmentManager(private val container: ViewGroup,
         tryRestoreLast()
     }
 
-    
     fun onBackPressed() {
 
         if (stack.isEmpty() || stack.size < 2) {
@@ -169,7 +157,6 @@ class FragmentManager(private val container: ViewGroup,
         item.onBackPressed()
     }
 
-    
     fun hasNotEndedActions(): Boolean {
 
         if (stack.isEmpty()) {
@@ -181,7 +168,6 @@ class FragmentManager(private val container: ViewGroup,
         return fragment.hasNotEndedAction()
     }
 
-    
     fun onActionEndRequired() {
 
         if (stack.isEmpty()) {
@@ -195,12 +181,10 @@ class FragmentManager(private val container: ViewGroup,
         }
     }
 
-    
     fun closeFragment(name: Fragment<out Serializable>) {
         closeFragment0(name.javaClass.name)
     }
 
-    
     fun closeFragment(fragment: Class<out Fragment<out Serializable>>) {
         closeFragment0(fragment.name)
     }

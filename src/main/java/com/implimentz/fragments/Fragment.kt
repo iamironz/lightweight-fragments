@@ -107,7 +107,7 @@ open class Fragment<Data : Serializable>(val arguments: Data? = null) {     //pa
 
     }
 
-    //calls after back button was perssed
+    //calls after back button was pressed
     open fun onBackPressed() {
 
     }
