@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         minSdkVersion 14
-        maxSdkVersion 23
+        maxSdkVersion 24
     }
 }
 
