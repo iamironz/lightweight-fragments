@@ -226,12 +226,12 @@ class FragmentManager(private val container: ViewGroup,
 
     private fun tryAddViewToFront(fragment: Fragment<out Serializable>) {
         val view = fragment.constructView(container, inflater)
-        if (container.contains(view)) {
-            return
+
+        if (container.contains(view).not()) {
+            container.addView(view)
+            container.hidePrevious()
         }
 
-        container.addView(view)
-        container.hidePrevious()
         fragment.onResume()
     }
 
@@ -248,6 +248,7 @@ class FragmentManager(private val container: ViewGroup,
 
         container.showPrevious()
         container.removeView(view)
+        fragment.onPause()
         fragment.onDestroy()
     }
 
