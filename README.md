@@ -14,7 +14,7 @@ Using fragment manager:
     });
 
         
-**To opening fragment:**
+**To open fragment:**
 
     manager.openFragment(new MainFragment());
 

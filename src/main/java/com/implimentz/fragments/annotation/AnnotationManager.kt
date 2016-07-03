@@ -15,8 +15,8 @@ import java.util.*
  */
 internal object AnnotationManager {
 
-    private val metasMap: MutableMap<Int, FragmentMeta> = HashMap()
-    private val layoutsMap: MutableMap<Int, LayoutMeta> = HashMap()
+    private val metasMap: MutableMap<String, FragmentMeta> = HashMap()
+    private val layoutsMap: MutableMap<String, LayoutMeta> = HashMap()
 
     fun <D : Serializable> getFragmentMetaAnnotation(fragment: Fragment<D>): FragmentMeta {
         return getMetaFromCacheOrRaw(fragment, metasMap)
@@ -26,12 +26,12 @@ internal object AnnotationManager {
         return getMetaFromCacheOrRaw(fragment, layoutsMap)
     }
 
-    private inline fun <D : Serializable, reified A : Annotation> getMetaFromCacheOrRaw(fragment: Fragment<D>, map: MutableMap<Int, A>): A {
+    private inline fun <D : Serializable, reified A : Annotation> getMetaFromCacheOrRaw(fragment: Fragment<D>, map: MutableMap<String, A>): A {
 
-        val hashCode = fragment.hashCode()
+        val cachedName = fragment.javaClass.name
 
-        if (map.containsKey(hashCode)) {
-            return map[hashCode]!!
+        if (map.containsKey(cachedName)) {
+            return map[cachedName]!!
         }
 
         val clazz = A::class.java
@@ -39,7 +39,7 @@ internal object AnnotationManager {
         val annotation = fragment.javaClass.getAnnotation(clazz)
 
         if (annotation != null) {
-            map.put(hashCode, annotation)
+            map.put(cachedName, annotation)
             return annotation
         }
 
