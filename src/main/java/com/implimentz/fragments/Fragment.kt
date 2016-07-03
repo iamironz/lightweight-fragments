@@ -23,7 +23,7 @@ import java.io.Serializable
  * Base class for using as fragment container that represent activity lifecycle with specific lifecycle methods.
  *
  * @param arguments (optional) - for passing parametrized argument with some specific data needed by fragment.
- * Passing for getArguments() return parametrized argument and getting into [onViewCreated] method.
+ * Passing for [arguments] return parametrized argument and getting into [onViewCreated] method.
  * Must implement [Serializable] marker interface or if argument not passing set generic type as [NoArgs].
  * Please make sure to call super() constructor.
  */
