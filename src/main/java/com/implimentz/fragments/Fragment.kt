@@ -81,13 +81,13 @@ open class Fragment<Data : Serializable>(val arguments: Data? = null) {
 
     /**
      * inflate layout from annotation or throws exception if annotation was not found
-     * @see [AnnotationManager.getLayoutMetaAnnotation]
+     * @see [AnnotationManager.getLayoutOrThrow]
      *
      * @param container - target container for showing content in
      * @param inflater - activity inflater for inflate [com.implimentz.fragments.annotation.LayoutMeta]
      */
     private fun inflateViewFromLayoutRes(container: ViewGroup, inflater: LayoutInflater): View {
-        val meta = AnnotationManager.getLayoutMetaAnnotation(this)
+        val meta = AnnotationManager.getLayoutOrThrow(this)
         return inflater.inflate(meta.value, container, false)
     }
 
@@ -103,7 +103,7 @@ open class Fragment<Data : Serializable>(val arguments: Data? = null) {
     }
 
     /**
-     * Method that calls after activity created/restored
+     * Method that calls after container activity or fragment created/restored
      */
     @CallSuper
     open fun onResume() {
@@ -111,7 +111,7 @@ open class Fragment<Data : Serializable>(val arguments: Data? = null) {
     }
 
     /**
-     * Method that calls after activity is minimized/overlapped
+     * Method that calls after container activity or fragment is minimized/overlapped
      */
     @CallSuper
     open fun onPause() {

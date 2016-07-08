@@ -17,4 +17,4 @@ import kotlin.annotation.AnnotationTarget.FILE
 @Target(CLASS, FILE)
 @Retention(RUNTIME)
 annotation
-class LayoutMeta(@LayoutRes val value: Int)
+class FragmentLayout(@LayoutRes val value: Int)

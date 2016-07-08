@@ -104,7 +104,7 @@ class FragmentManager(private val container: ViewGroup,
             return false
         }
 
-        for (i in stack.indices) { //TODO implement foreach indexed with returning values
+        for (i in stack.indices) {
             val fragment = stack[i]
             if (fragment.name == name) {
                 closeFragmentRange(i.inc())
@@ -236,8 +236,11 @@ class FragmentManager(private val container: ViewGroup,
     }
 
     private fun callStackListener(fragment: Fragment<out Serializable>) {
-        val meta = AnnotationManager.getFragmentMetaAnnotation(fragment)
-        listener.onStackChanged(fragment, meta)
+        val meta = AnnotationManager.getMetaOrThrow(fragment)
+        val layout = AnnotationManager.getLayoutOrThrow(fragment)
+        val analytics = AnnotationManager.getAnalyticsOrNull(fragment)
+        val menu = AnnotationManager.getMenuOrNull(fragment)
+        listener.onStackChanged(fragment, meta, layout, analytics, menu)
     }
 
     private fun tryClose(fragment: Fragment<out Serializable>) {
