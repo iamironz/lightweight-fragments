@@ -30,8 +30,10 @@ class FragmentManager(private val container: ViewGroup,
     }
 
     fun destroyStack() {
-        stack.forEach { it.onPause() }
-        stack.forEach { it.onDestroy() }
+        stack.forEach {
+            it.onPause()
+            it.onDestroy()
+        }
         FragmentHolder.unregister(container.id)
     }
 
