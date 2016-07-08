@@ -8,7 +8,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import com.implimentz.fragments.annotation.AnnotationManager
+import com.implimentz.fragments.annotation.*
 import java.io.Serializable
 
 /**
@@ -29,20 +29,20 @@ import java.io.Serializable
  */
 open class Fragment<Data : Serializable>(val arguments: Data? = null) {
 
-    @Volatile
-    internal var configurationChanged: Boolean = false
-    @Volatile
-    var finished: Boolean = false
+    @Volatile internal var configurationChanged: Boolean = false
+    @Volatile var finished: Boolean = false
         private set
-    @Volatile
-    var showing: Boolean = false
+    @Volatile var showing: Boolean = false
         private set
-    @Volatile
-    var name: String? = null
+    @Volatile var name: String? = null
         internal set
-    @Volatile
-    var view: View? = null
+    @Volatile var view: View? = null
         private set
+
+    val meta: FragmentMeta = AnnotationManager.getMetaOrThrow(this)
+    val layout: FragmentLayout = AnnotationManager.getLayoutOrThrow(this)
+    val analytics: FragmentAnalytics? = AnnotationManager.getAnalyticsOrNull(this)
+    val menu: FragmentMenu? = AnnotationManager.getMenuOrNull(this)
 
     /**
      * Function that calls by App [android.content.ComponentCallbacks] while screen orientation is changed

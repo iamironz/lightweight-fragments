@@ -4,7 +4,6 @@ package com.implimentz.fragments
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import com.implimentz.fragments.annotation.AnnotationManager
 import java.io.Serializable
 import java.util.*
 
@@ -239,11 +238,7 @@ class FragmentManager(private val container: ViewGroup,
     }
 
     private fun callStackListener(fragment: Fragment<out Serializable>) {
-        val meta = AnnotationManager.getMetaOrThrow(fragment)
-        val layout = AnnotationManager.getLayoutOrThrow(fragment)
-        val analytics = AnnotationManager.getAnalyticsOrNull(fragment)
-        val menu = AnnotationManager.getMenuOrNull(fragment)
-        listener.onStackChanged(fragment, meta, layout, analytics, menu)
+        listener.onStackChanged(fragment)
     }
 
     private fun tryClose(fragment: Fragment<out Serializable>) {
