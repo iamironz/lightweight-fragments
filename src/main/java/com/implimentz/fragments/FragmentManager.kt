@@ -30,6 +30,7 @@ class FragmentManager(private val container: ViewGroup,
     }
 
     fun destroyStack() {
+        stack.forEach { it.onPause() }
         stack.forEach { it.onDestroy() }
         FragmentHolder.unregister(container.id)
     }
@@ -252,6 +253,11 @@ class FragmentManager(private val container: ViewGroup,
         container.showPrevious()
         container.removeView(view)
         fragment.onPause()
+
+        if(fragment.configurationChanged) {
+            return
+        }
+
         fragment.onDestroy()
     }
 
