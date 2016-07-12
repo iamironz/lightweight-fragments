@@ -12,5 +12,5 @@ import java.io.Serializable
  * twitter: iamironz
  */
 
-//marker class for using in parametrized type fragment without any arguments passed
+//marker class for using in parametrized type fragment without passing any arguments
 class NoArgs private constructor() : Serializable

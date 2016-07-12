@@ -1,8 +1,6 @@
 package com.implimentz.fragments.annotation
 
 import android.util.NoSuchPropertyException
-import com.implimentz.fragments.Fragment
-import java.io.Serializable
 import java.util.*
 
 
@@ -20,25 +18,25 @@ internal object AnnotationManager {
     private val ANALYTICS_MAP: MutableMap<String, FragmentAnalytics> = HashMap()
     private val MENU_MAP: MutableMap<String, FragmentMenu> = HashMap()
 
-    fun <D : Serializable> getMetaOrThrow(fragment: Fragment<D>): FragmentMeta {
+    fun getMetaOrThrow(fragment: Any): FragmentMeta {
         return getMetaFromCacheOrRaw(fragment, METAS_MAP, true)!!
     }
 
-    fun <D : Serializable> getLayoutOrThrow(fragment: Fragment<D>): FragmentLayout {
+    fun getLayoutOrThrow(fragment: Any): FragmentLayout {
         return getMetaFromCacheOrRaw(fragment, LAYOUTS_MAP, true)!!
     }
 
-    fun <D : Serializable> getAnalyticsOrNull(fragment: Fragment<D>): FragmentAnalytics? {
+    fun getAnalyticsOrNull(fragment: Any): FragmentAnalytics? {
         return getMetaFromCacheOrRaw(fragment, ANALYTICS_MAP, false)
     }
 
-    fun <D : Serializable> getMenuOrNull(fragment: Fragment<D>): FragmentMenu? {
+    fun getMenuOrNull(fragment: Any): FragmentMenu? {
         return getMetaFromCacheOrRaw(fragment, MENU_MAP, false)
     }
 
-    private inline fun <D : Serializable, reified A : Annotation> getMetaFromCacheOrRaw(fragment: Fragment<D>,
-                                                                                        map: MutableMap<String, A>,
-                                                                                        throwIfNotExists: Boolean): A? {
+    private inline fun <reified A : Annotation> getMetaFromCacheOrRaw(fragment: Any,
+                                                                      map: MutableMap<String, A>,
+                                                                      throwIfNotExists: Boolean): A? {
 
         val cachedName = fragment.javaClass.name
 
