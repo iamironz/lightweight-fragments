@@ -53,7 +53,7 @@ internal object AnnotationManager {
             return annotation
         }
 
-        if (!throwIfNotExists) {
+        if (throwIfNotExists.not()) {
             return null
         }
 

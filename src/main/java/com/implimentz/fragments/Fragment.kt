@@ -25,7 +25,7 @@ import java.io.Serializable
  * @param arguments (optional) - for passing parametrized argument with some specific data needed by fragment.
  * Passing for [arguments] return parametrized argument and getting into [onViewCreated] method.
  * Must implement [Serializable] marker interface or if argument not passing set generic type as [NoArgs].
- * Please make sure to call super() constructor.
+ * Please MAKE SURE TO CALL super() constructor.
  */
 open class Fragment<Data : Serializable>(val arguments: Data? = null) {
 

@@ -22,7 +22,7 @@ class FragmentManager(private val container: ViewGroup,
                       private val inflater: LayoutInflater,
                       private val listener: StackChangeListener) {
 
-    private val stack = FragmentHolder.getStackById(container.id)
+    val stack = FragmentHolder.getStackById(container.id)
 
     init {
         FragmentHolder.register(container.id)
@@ -60,10 +60,6 @@ class FragmentManager(private val container: ViewGroup,
         val fragment = stack.last()
 
         tryShow(fragment)
-    }
-
-    fun getFragments(): MutableList<Fragment<out Serializable>> {
-        return stack
     }
 
     fun openFragment(name: String, fragment: Fragment<out Serializable>) {
@@ -195,15 +191,15 @@ class FragmentManager(private val container: ViewGroup,
             return
         }
 
-        stack.asReversed()
-                .filter {
-                    it.name == name
-                }
-                .forEach {
-                    tryClose(it)
-                    stack.remove(it)
-                    tryRestoreLast()
-                }
+        val firstOrNull = stack.asReversed()
+                .filter { it.name == name }
+                .firstOrNull()
+
+        firstOrNull?.let {
+            tryClose(it)
+            stack.remove(it)
+            tryRestoreLast()
+        }
     }
 
     private fun tryRestoreLast() {
@@ -227,6 +223,7 @@ class FragmentManager(private val container: ViewGroup,
     }
 
     private fun tryAddViewToFront(fragment: Fragment<out Serializable>) {
+
         val view = fragment.constructView(container, inflater)
 
         if (container.contains(view).not()) {
@@ -242,7 +239,9 @@ class FragmentManager(private val container: ViewGroup,
     }
 
     private fun tryClose(fragment: Fragment<out Serializable>) {
+
         val view = fragment.view
+
         if (container.contains(view).not()) {
             return
         }
@@ -251,7 +250,7 @@ class FragmentManager(private val container: ViewGroup,
         container.removeView(view)
         fragment.onPause()
 
-        if(fragment.configurationChanged) {
+        if (fragment.configurationChanged) {
             return
         }
 

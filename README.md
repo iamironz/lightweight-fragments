@@ -68,6 +68,11 @@ Using fragment manager:
         super.onPause();
     }
 
+**TODO:**
+1.Robolectric tests
+2.More doc
+3.DialogFragment implementation
+
 # License
 
     The MIT License (MIT)
