@@ -1,4 +1,4 @@
-group 'com.implimentz.fragments'
+group 'com.ironz'
 version '0.0.3'
 
 apply plugin: 'com.android.library'
@@ -17,6 +17,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         maxSdkVersion 24
+        versionCode 1
+        versionName "0.1.0"
     }
 }
 
