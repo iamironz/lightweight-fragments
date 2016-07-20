@@ -7,7 +7,7 @@ Using fragment manager:
 **Create fragment manager instance:**
 
 ```java
-manager =  new FragmentManager(viewGroup, layoutInflater, new StackChangeListener() {
+manager = new FragmentManager(viewGroup, layoutInflater, new StackChangeListener() {
     @Override
     public <D extends Serializable> void onStackChanged(Fragment<D> fragment, FragmentMeta fragmentMeta) {
     

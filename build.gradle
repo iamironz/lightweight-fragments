@@ -17,9 +17,39 @@ android {
     defaultConfig {
         minSdkVersion 14
         maxSdkVersion 24
-        versionCode 1
-        versionName "0.1.0"
+        versionCode getGitActualVersionCode()
+        versionName getGitActualTagName()
     }
+
+    libraryVariants.all { variant ->
+        variant.outputs.each { output ->
+            output.outputFile = new File(
+                    output.outputFile.parent,
+                    output.outputFile.name.replace(".aar", getVersionName()))
+        }
+    }
+}
+
+def getVersionName() {
+    "-${getGitActualVersionCode()}-${getGitActualTagName()}-${getGitRevParseInfo("--short")}.aar"
+}
+
+def getGitActualVersionCode() {
+    def cmd = "git tag"
+    def proc = cmd.execute()
+    proc.text.split("\r\n").length + 1
+}
+
+def getGitActualTagName() {
+    def cmd = "git describe --abbrev=0 --tags"
+    def proc = cmd.execute()
+    proc.text.trim()
+}
+
+def getGitRevParseInfo(what) {
+    def cmd = "git rev-parse ${what} HEAD"
+    def proc = cmd.execute()
+    proc.text.trim()
 }
 
 buildscript {
