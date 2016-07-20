@@ -37,7 +37,7 @@ def getVersionName() {
 def getGitActualVersionCode() {
     def cmd = "git tag"
     def proc = cmd.execute()
-    proc.text.split("\r\n").length + 1
+    proc.text.split("\n").length + 1
 }
 
 def getGitActualTagName() {
