@@ -69,9 +69,9 @@ Using fragment manager:
     }
 
 **TODO:**
-1.Robolectric tests
-2.More doc
-3.DialogFragment implementation
+1. Robolectric tests
+2. More doc
+3. DialogFragment implementation
 
 # License
 

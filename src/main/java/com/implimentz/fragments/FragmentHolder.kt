@@ -48,18 +48,18 @@ object FragmentHolder {
         }
     }
 
+    private fun setForAllConfigChanges(it: MutableList<Fragment<out Serializable>>) {
+        it.forEach {
+            it.configurationChanged = true
+        }
+    }
+
     private fun callAllForConfigurationChanged(it: MutableList<Fragment<out Serializable>>, newConfig: Configuration) {
         it.filter {
             it.finished.not()
         }.forEach {
             it.onConfigurationChanged(newConfig)
             it.onPause()
-        }
-    }
-
-    private fun setForAllConfigChanges(it: MutableList<Fragment<out Serializable>>) {
-        it.forEach {
-            it.configurationChanged = true
         }
     }
 
