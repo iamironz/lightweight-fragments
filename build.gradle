@@ -31,13 +31,13 @@ android {
 }
 
 def getVersionName() {
-    "-${getGitActualVersionCode()}-${getGitActualTagName()}-${getGitRevParseInfo("--short")}.aar"
+    "-${getGitActualVersionCode()}-${getGitActualTagName()}-${getGitBranchName()}-${getGitShortRevisionName()}.aar"
 }
 
 def getGitActualVersionCode() {
     def cmd = "git tag"
     def proc = cmd.execute()
-    proc.text.split("\n").length + 1
+    proc.text.split("\n").toSorted { !it.contains("RC") }.length + 1
 }
 
 def getGitActualTagName() {
@@ -46,8 +46,14 @@ def getGitActualTagName() {
     proc.text.trim()
 }
 
-def getGitRevParseInfo(what) {
-    def cmd = "git rev-parse ${what} HEAD"
+def getGitShortRevisionName() {
+    def cmd = "git rev-parse --short HEAD"
+    def proc = cmd.execute()
+    proc.text.trim()
+}
+
+def getGitBranchName() {
+    def cmd = "git rev-parse --abbrev-ref HEAD"
     def proc = cmd.execute()
     proc.text.trim()
 }
