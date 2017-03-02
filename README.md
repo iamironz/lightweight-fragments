@@ -1,5 +1,5 @@
 # lightweight-fragments
-Lightweight android fragment implementation. Uses base activity stack lifecycle.
+Lightweight android fragment implementation. Uses base activity lifecycle stack.
 This is experimantal concept, please, use with caution!
 
 Using fragment manager:
